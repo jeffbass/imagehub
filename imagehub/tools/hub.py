@@ -58,8 +58,6 @@ class ImageHub:
         # open ZMQ hub using imagezmq
         self.image_hub = imagezmq.ImageHub()
 
-        self.active_nodes = {}
-
     def process(self, text, image):
         ''' process one incoming message
 
@@ -109,11 +107,8 @@ class ImageHub:
         return 'hub_reply'
         pass
 
-    def closeall(self, settings):
-        """ Close all resources, including cameras, lights, GPIO.
-
-        Parameters:
-            settings (Settings object): settings object created from YAML file
+    def closeall(self):
+        """ Close all resources & write any images remaining in image_q.
         """
         pass
 
