@@ -44,9 +44,9 @@ def main():
     except Exception as ex:  # traceback will appear in log
         log.exception('Unanticipated error with no Exception handler.')
     finally:
-        if 'node' in locals():
-            node.closeall(settings) # close cameras, GPIO, files
-        log.info('Exiting imagenode.py')
+        if 'hub' in locals():
+            hub.closeall()
+        log.info('Exiting imagehub.py')
         sys.exit()
 
 def start_logging(hub):
@@ -57,6 +57,7 @@ def start_logging(hub):
     handler.setFormatter(formatter)
     log.addHandler(handler)
     log.setLevel(logging.DEBUG)
+    hub.log = log
     return log
 
 if __name__ == '__main__' :

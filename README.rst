@@ -6,8 +6,8 @@ Introduction
 ============
 
 **imagehub** receives and stores event messages and event images from multiple
-sources simultaneously. The sources are Raspberry Pi (and other) computers running
-**imaganode** to capture and send selected images and event messages.
+sources simultaneously. The sources are Raspberry Pi (and other) computers
+running **imaganode** to capture and send selected images and event messages.
 
 **imagehub** also has a playback program that can playback images and events
 that is has stored:
