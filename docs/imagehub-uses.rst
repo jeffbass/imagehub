@@ -1,19 +1,20 @@
 ===========================================================
-Using **imagenode** in Distributed Computer Vision Projects
+Using **imagehub** in Distributed Computer Vision Projects
 ===========================================================
 
-The test programs show how **imagenode** can be used to capture images on
-Raspberry Pi computers, send them to a Mac via **imagezmq** and then display
-them on the Mac. The ability for one hub to gather and process images from
+The test programs show how **imagehub** can be used to receive and store images
+and event messages from multiple
+Raspberry Pi and other computers. The ability for one hub to gather, sort and store images from
 multiple sources allows computer vision pipelines to distribute vision processing
 across multiple computers.
 
-Let's walk through an example where the combination of **imagenode** and
-**imagezmq** is used to distribute a computer vision process across a Raspberry
-Pi and a Mac. This project involves reading a water meter using a Raspberry Pi
-and PiCamera to gather images and do some image processing locally. The
-**imagenode** program running on the Raspberry Pi selects some images to be
-transmitted via **imagezmq** to a Mac for more complex processing.
+Let's walk through an example where the combination of **imagenode**,
+**imagezmq** and **imagehub** are used to distribute a computer vision process
+across a Raspberry Pi and a Mac. This project involves reading a water meter
+using a Raspberry Pi and PiCamera to gather images and do some image processing
+locally. The **imagenode** program running on the Raspberry Pi selects some
+images to be transmitted via **imagezmq** to **imagehub** for storage and
+additional processing.
 
 This is what a water meter looks like:
 
@@ -96,12 +97,13 @@ processing, motion detection and sending a subset of gathered images. The Mac
 has enough processing power to do further image processing for all 8 Raspberry Pi
 image streams.
 
-The code for the Raspberry Pi **imagenode** program is in this Github repository.
+The code for the Raspberry Pi **imagehub** program is in this Github repository.
 The code for the **imagezmq** communication software that allows the node
 computers to communicate with the hub computer is in the
 `**imagezmq** GitHub repository <https://github.com/jeffbass/imagezmq>`_.
-The Mac based **imagehub** program will be placed in GitHub repositories at
-``(coming soon)``. See the `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_.
+The code for the **imagenode** program is in the
+`**imagenode** GitHub repository <https://github.com/jeffbass/imagenode>`_.
+See the `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_.
 for more details about the architecture of the
 imagenode <--> imagezmq <--> imagehub system.
 

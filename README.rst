@@ -1,26 +1,18 @@
-===================================================
-imagenode: Capture and Send Images and Sensor Data
-===================================================
+============================================================
+imagehub: Receive and save images and events from imagenodes
+============================================================
 
 Introduction
 ============
 
-**imagenode** enables Raspberry Pi computers to capture images with the
-PiCamera, perform image transformations and send them to a central **imagehub** for
-further processing. It can also send other sensor data such as temperature data
-and GPIO data. The processing power of the Raspberry Pi is used to detect
-events (like the water meter flowing or a coyote crossing the back yard), and
-then send a limited number of images of the event. It also works on other types
-of (non Raspberry Pi) computers with USB cams or webcams.
+**imagehub** receives and stores event messages and event images from multiple
+sources simultaneously. The sources are Raspberry Pi (and other) computers running
+**imaganode** to capture and send images and event messages.
 
-Here are a couple of screenshots showing images sent by a Raspberry Pi PiCamera
-and displayed on a Mac. In the top screenshot, a ballpoint pen hanging from a
-string is still. In the bottom screenshot, the ballpoint pen is swinging back
-and forth. The largest image in each screenshot is the full frame sent by the
-PiCamera. The smaller windows are showing the **imagenode** motion detector
-parameter tuning displays including the detected motion state of "still" and
-"moving":
+**imagehub** also has a playback program that can playback images and events
+that is has stored:
 
+**Show a playback of images and logs for a given time period**
 .. image:: docs/images/still_and_moving.png
 
 .. contents::
@@ -28,31 +20,13 @@ parameter tuning displays including the detected motion state of "still" and
 Overview
 ========
 
-**imagenode** is the image capture and sending portion of a computer vision
-pipeline that is typically run on multiple computers. For example, a Raspberry
-Pi computer runs **imagenode** to capture images with a PiCamera and perform
-some simple image processing. The images are transferred by **imagezmq** (see
-reference) to a hub computer running **imagehub** (often a Mac) for further
-image processing. The real benefit of **imagenode** is that it can use the
-the processing power of the Raspberry Pi to:
-
-- Continuously capture images (around 10 frames a second is typical)
-- Analyze the images to detect events (e.g., water meter started flowing)
-- When a detected event occurs:
-
-  - Send an event message about the event to the imagehub
-  - Send a select few "detected state change" images to the imagehub
-
-So, instead of 36,000 images an hour being sent from our water meter cam to our
-**imagehub**, only about 20 images are sent each time the water starts flowing
-or stops flowing. Instead of many thousands of images an hour showing a mostly
-unmoving farm area, our critter cams spot coyotes, raccoons and rabbits and only
-sends event messages and images when something is seen actually moving about.
-
-**imagenode** provides image capture, event detection and transmission services
-as part of a distributed computer vision system that includes multiple
-computers with cameras, sensors, database hubs and communication links.
-See `Using imagenode in distributed computer vision projects <docs/imagenode-uses.rst>`_
+**imagehub** is the "receive and store" part of a computer vision
+pipeline that is run on multiple computers. Multiple Raspberry Pi (RPi)
+(and other) computers run **imagenode** to capture images, detect motion, light,
+temperature values, etc. **imagenode** then sends event messages and selected
+images to **imagehub**, which sorts and files the events and messages for later
+analysis.  A typical setup has 8 to 12 sending computer for each **imagehub**.
+See `Using imagehub in distributed computer vision projects <docs/imagehub-uses.rst>`_
 for a more detailed explanation of the overall project design. See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the

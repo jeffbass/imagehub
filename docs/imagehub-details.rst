@@ -1,12 +1,13 @@
 ==============================================================
-How **imagenode** works: pseudo code and data structure design
+How **imagehub** works: pseudo code and data structure design
 ==============================================================
 
 Here's what **imagenode** does::
 
   # stuff done one time at program startup
   Read a YAML file into Settings (e.g. cameras, ROIs, detector settings)
-  Instantiate a Node using Settings:
+  Start the Hub Events Log
+  Instantiate a Hub using Settings:
     Instantiate Cameras
     For each Camera:
       Instantiate one or more Detectors (e.g. motion detector) with ROI etc.
@@ -26,7 +27,7 @@ Here's what **imagenode** does::
 Here are the classes and data structures::
 
   Class Settings (filled once by reading from the YAML file)
-  Class Node (instantiated once using Settings)
+  Class Hub (instantiated once using Settings)
     Class Camera (can instantiate zero or more cameras)
       Class Detector (instantiate one or more per camera)
         Attributes: Detector_type, ROI_corners, parameters (threshold values, etc.)
