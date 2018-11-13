@@ -1,7 +1,6 @@
-"""imaging: imagenode, camera, sensor and image processing classes
-Also reads settings from imagenode.yaml file.
+"""hub.py -- ImagHub and Settings classes
 
-Copyright (c) 2017 by Jeff Bass.
+Copyright (c) 2018 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 
@@ -90,17 +89,7 @@ class ImageHub:
 
         Restart link if possible, else restart program or reboot computer.
         """
-        # TODO add some of the ongoing experiments to this code when
-        #      have progressed in development and testing
-        # Currently in testing:
-        #     1. Just wait longer one time and try sending again:
-        #        hub_reply = node.send_frame(text, image) # again
-        #     2. Doing 1 repeatedly with exponential time increases
-        #     3. Stopping and closing ZMQ context; restarting and sending
-        #            last message
-        #     4. Check WiFi ping; stop and restart WiFi service
-        #     5. Reboot RPi; allow startup to restart imagenode.py
-        #
+
         print('Fixing broken comm link...')
         print('....by ending the program.')
         raise KeyboardInterrupt
