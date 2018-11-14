@@ -32,7 +32,7 @@ def main():
         while True:
             try:
                 with Patience(hub.patience):
-                    text, image = hub.receive()
+                    text, image = hub.receive_next()
             except Patience.Timeout:  # if no timely message from any node
                 hub.handle_timeout()
                 continue

@@ -55,16 +55,21 @@ class ImageHub:
         # start system health monitoring & get system type (RPi vs Mac etc)
         self.health = HealthMonitor(settings, self.image_q)
 
+        self.patience = settings.patience * 60  # convert to seconds
+
         # open ZMQ hub using imagezmq
         self.image_hub = imagezmq.ImageHub()
+        self.receive_next = self.image_hub.recv_jpg  # assume receving jpg
+        self.send_reply = self.image_hub.send_reply
 
         # check that data and log directories exist; create them if not
         self.image_directory = self.build_dir(settings.image_directory, settings)
         self.log_directory = self.build_dir(settings.log_directory, settings)
-        self.log_file = os.path.join(self.log_directory, 'imagehub.log')
+        self.logfile = os.path.join(self.log_directory, 'imagehub.log')
         print('image directory:', self.image_directory)
         print('log directory:', self.log_directory)
-        print('log file:', self.log_file)
+        print('log file:', self.logfile)
+        self.log = None
 
     def build_dir(self, directory, settings):
         """Build full directory name from settings directory from yaml file
@@ -91,45 +96,39 @@ class ImageHub:
 
         '''
         message = text.split("|")
-        node_and_view = message[0]  # not using this in current version
-        # >>> datetime.datetime.now().isoformat()
+        node_and_view = message[0].strip().replace(' ', '-')
+        # datetime.now().isoformat()
         # '2013-11-18T08:18:31.809000'
-        timestamp = datetime.datetime.now().isoformat().replace(':', '.')
-        image_filename = node_and_view + timestamp
+        timestamp = datetime.now().isoformat().replace(':', '.')
+        image_filename = node_and_view + '-' + timestamp
         type = message[1]  # type is the second delimited field in text
         t0 = type[0]  # the first character of type is unique & compares faster
 
         if t0 == 'H':  # Heartbeat message; fast return before testing anyting else
             return 'OK'
         elif t0 == "i":  # image
-            self.image_q.append((image_filename, image, t0,))
+            pass  # ignore image type; only saving jpg images for now
         elif t0 == 'j':  # jpg
             self.image_q.append((image_filename, image, t0,))
+            # writing image files from image_q will be done in thread later
+            # for testing for now, pop image_q and write the image file here
+            self.write_one_image()
         else:
             log_text = timestamp + ' ~ ' + text
-            hub.log.info(log_text)
+            self.log.info(log_text)
             print(log_text)
+        return b'OK'
 
-        # writing image files from image_q will be done in thread later
-        # for testing for now, pop image_q and write the image file here
-        self.write_one_image()
-        return 'OK'
-
-    def write_one_image():
+    def write_one_image(self):
         filename, image, type = self.image_q.popleft()
-        print('filename and image type:' filename, type)
+        print('filename and image type:', filename, type)
         pass
 
-    def fix_comm_link(self):
-        """ Evaluate, repair and restart communications link with hub.
-
-        Restart link if possible, else restart program or reboot computer.
-        """
-
-        print('Fixing broken comm link...')
-        print('....by ending the program.')
-        raise KeyboardInterrupt
-        return 'hub_reply'
+    def handle_timeout(self):
+        timestamp = datetime.now().isoformat().replace(':', '.')
+        message = timestamp + ' ~ ' + 'No messages received for ' + str(
+            self.patience // 60) + ' minutes.'
+        self.log.info(message)
         pass
 
     def closeall(self):
@@ -173,7 +172,7 @@ class Settings:
         if 'patience' in self.config['hub']:
             self.patience = self.config['hub']['patience']
         else:
-            self.patience = 60  # default is to wait 10 seconds for hub reply
+            self.patience = 10  # default is to wait 10 minutes for hub reply
         if 'queuemax' in self.config['hub']:
             self.queuemax = self.config['hub']['queuemax']
         else:
