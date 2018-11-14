@@ -58,8 +58,8 @@ class ImageHub:
         self.image_hub = imagezmq.ImageHub()
 
         # check that data and log directories exist; create them if not
-        self.image_directory = build_dir(settings.image_directory)
-        self.log_directory = build_dir(settings.log_directory)
+        self.image_directory = self.build_dir(settings.image_directory, settings)
+        self.log_directory = self.build_dir(settings.log_directory, settings)
         self.log_file = os.path.join(self.log_directory, 'imagehub.log')
         print('image directory:', self.image_directory)
         print('log directory:', self.log_directory)
@@ -67,7 +67,7 @@ class ImageHub:
 
         raise KeyboardInterrupt  # end testing here for now
 
-    def build_dir(self, directory):
+    def build_dir(self, directory, settings):
         """Build full directory name from settings directory from yaml file
         """
         full_directory = os.path.join(settings.userdir,directory)
@@ -171,6 +171,8 @@ class Settings:
             self.log_directory = self.config['hub']['log_directory']
         else:
             self.log_directory = 'imagehub_logs'
+        self.nodename = None
+        self.heartbeat = None
 
     def print_settings(self, title=None):
         """ prints the settings in the yaml file using pprint()
