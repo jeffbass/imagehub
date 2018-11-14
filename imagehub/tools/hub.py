@@ -25,7 +25,7 @@ from tools.utils import interval_timer
 from tools.nodehealth import HealthMonitor
 
 class ImageHub:
-    """ Contains all the attributes and methods of this imagehub
+    """ Contains the attributes and methods of an imagehub
 
     One ImageHub is instantiated during the startup of the imagehub.py
     program. It takes the settings loaded from the YAML file and sets all
@@ -56,6 +56,27 @@ class ImageHub:
 
         # open ZMQ hub using imagezmq
         self.image_hub = imagezmq.ImageHub()
+
+        # check that data and log directories exist; create them if not
+        self.image_directory = build_dir(settings.image_directory)
+        self.log_directory = build_dir(settings.log_directory)
+        self.log_file = os.path.join(self.log_directory, 'imagehub.log')
+        print('image directory:', self.image_directory)
+        print('log directory:', self.log_directory)
+        print('log file:', self.log_file)
+
+        raise KeyboardInterrupt  # end testing here for now
+
+    def build_dir(self, directory):
+        """Build full directory name from settings directory from yaml file
+        """
+        full_directory = os.path.join(settings.userdir,directory)
+        try:
+            os.mkdir(full_directory)
+        except FileExistsError:
+            pass
+        return full_directory
+
 
     def process(self, text, image):
         ''' process one incoming message
@@ -120,6 +141,7 @@ class Settings:
 
     def __init__(self):
         userdir = os.path.expanduser("~")
+        self.userdir = userdir
         with open(os.path.join(userdir,"imagehub.yaml")) as f:
             self.config = yaml.safe_load(f)
         self.print_hub = False
