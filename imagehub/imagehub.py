@@ -33,7 +33,6 @@ def main():
             try:
                 with Patience(hub.patience):
                     text, image = hub.receive()
-                    hub_reply = node.send_frame(text, image)
             except Patience.Timeout:  # if no timely message from any node
                 hub.handle_timeout()
                 continue

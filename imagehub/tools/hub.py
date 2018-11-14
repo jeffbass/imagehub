@@ -14,6 +14,7 @@ import itertools
 import threading
 from time import sleep
 from ast import literal_eval
+from datetime import datetime
 from collections import deque
 import numpy as np
 import cv2
@@ -65,8 +66,6 @@ class ImageHub:
         print('log directory:', self.log_directory)
         print('log file:', self.log_file)
 
-        raise KeyboardInterrupt  # end testing here for now
-
     def build_dir(self, directory, settings):
         """Build full directory name from settings directory from yaml file
         """
@@ -79,31 +78,47 @@ class ImageHub:
 
 
     def process(self, text, image):
-        ''' process one incoming message
+        ''' process one incoming node message
 
         Every node message has a text part and an image part
 
         There are 2 formats for the node message text part:
         Event message: nodename viewname | event_type | optional added info
-        Image message: nodename viewname | image_type ('jpg' or 'image')
+        Image message: nodename viewname | image_type
+            (where image_type is either 'jpg' or 'image')
 
         See docs/imagehub-details.rst for more about message formats
 
         '''
         message = text.split("|")
         node_and_view = message[0]  # not using this in current version
+        # >>> datetime.datetime.now().isoformat()
+        # '2013-11-18T08:18:31.809000'
+        timestamp = datetime.datetime.now().isoformat().replace(':', '.')
+        image_filename = node_and_view + timestamp
         type = message[1]  # type is the second delimited field in text
         t0 = type[0]  # the first character of type is unique & compares faster
 
         if t0 == 'H':  # Heartbeat message; fast return before testing anyting else
             return 'OK'
         elif t0 == "i":  # image
-            self.image_q.append((node_and_view, image, t0,))
+            self.image_q.append((image_filename, image, t0,))
         elif t0 == 'j':  # jpg
-            self.image_q.append((node_and_view, image, t0,))
+            self.image_q.append((image_filename, image, t0,))
         else:
-            hub.log.info(text)
+            log_text = timestamp + ' ~ ' + text
+            hub.log.info(log_text)
+            print(log_text)
+
+        # writing image files from image_q will be done in thread later
+        # for testing for now, pop image_q and write the image file here
+        self.write_one_image()
         return 'OK'
+
+    def write_one_image():
+        filename, image, type = self.image_q.popleft()
+        print('filename and image type:' filename, type)
+        pass
 
     def fix_comm_link(self):
         """ Evaluate, repair and restart communications link with hub.
@@ -158,7 +173,7 @@ class Settings:
         if 'patience' in self.config['hub']:
             self.patience = self.config['hub']['patience']
         else:
-            self.patience = 10  # default is to wait 10 seconds for hub reply
+            self.patience = 60  # default is to wait 10 seconds for hub reply
         if 'queuemax' in self.config['hub']:
             self.queuemax = self.config['hub']['queuemax']
         else:
