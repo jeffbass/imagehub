@@ -100,17 +100,16 @@ class ImageHub:
 
         '''
         message = text.split("|")
-        node_and_view = message[0].strip().replace(' ', '-')
-        # datetime.now().isoformat()
-        # '2013-11-18T08:18:31.809000'
-        timestamp = datetime.now().isoformat().replace(':', '.')
-        image_filename = node_and_view + '-' + timestamp
         type = message[1]  # type is the second delimited field in text
         t0 = type[0]  # the first character of type is unique & compares faster
-
         if t0 == 'H':  # Heartbeat message; return before testing anything else
-            return 'OK'
-        elif t0 == "i":  # image
+            return b'OK'
+        node_and_view = message[0].strip().replace(' ', '-')
+        # datetime.now().isoformat() looks like '2013-11-18T08:18:31.809000'
+        timestamp = datetime.now().isoformat().replace(':', '.')
+        image_filename = node_and_view + '-' + timestamp
+
+        if t0 == "i":  # image
             pass  # ignore image type; only saving jpg images for now
         elif t0 == 'j':  # jpg; append to image_q
             self.image_q.append((image_filename, image, t0,))
