@@ -5,3 +5,5 @@ hub:
   patience: 1  # how often to log a lack of message in minutes
   print_settings: False
   data_directory: imagehub_data
+  max_images_write: 500  # a global cap on images to write in one day
+  # also may want max images per node or per hour or ?

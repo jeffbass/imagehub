@@ -123,6 +123,8 @@ class ImageHub:
         return b'OK'
 
     def write_one_image(self):
+        # when actually writing images, need to stop if too many have been
+        # written, to prevent disk fillup; need to set limits in imagehub.yaml
         filename, image, type = self.image_q.popleft()
         print('filename and image type:', filename, type)
         pass
