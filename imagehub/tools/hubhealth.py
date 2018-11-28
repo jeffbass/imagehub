@@ -1,4 +1,4 @@
-"""nodehealth: network and system stability classes
+"""hubhealth: network and system stability classes
 
 Copyright (c) 2017 by Jeff Bass.
 License: MIT, see LICENSE for more details.
@@ -21,25 +21,9 @@ class HealthMonitor:
 
     Parameters:
         settings (Settings object): settings object created from YAML file
-        send_q (list): queue of (text, image) messages to send to imagehub
     """
-    def __init__(self, settings, send_q):
-        self.send_q = send_q
+    def __init__(self, settings):
         self.sys_type = self.get_sys_type()
-        self.tiny_image = np.zeros((3,3), dtype="uint8")  # tiny blank image
-        if settings.nodename:
-            self.heartbeat_event_text = ' |'.join([settings.nodename, 'heartbeat'])
-        if settings.heartbeat:
-            threading.Thread(
-                target=lambda: interval_timer(
-                    settings.heartbeat, self.send_heartbeat)).start()
-
-    def send_heartbeat(self):
-        """ send a heartbeat message to imagehub
-        """
-        text = self.heartbeat_event_text
-        text_and_image = (text, self.tiny_image)
-        self.send_q.append(text_and_image)
 
     def get_sys_type(self):
         """ determine system type, e.g., RPi or Mac

@@ -23,7 +23,7 @@ from imutils.video import VideoStream
 sys.path.insert(0, '../../imagezmq/imagezmq') # for testing
 import imagezmq
 from tools.utils import interval_timer
-from tools.nodehealth import HealthMonitor
+from tools.hubhealth import HealthMonitor
 
 class ImageHub:
     """ Contains the attributes and methods of an imagehub
@@ -33,8 +33,8 @@ class ImageHub:
     the operational parameters of the imagehub, including the hub address and
     port to receive messages, directories to store images and logs, etc.
 
-    The ImageHub also has methods to write files from inbound message queue
-    to directories.
+    The ImageHub has methods to write events from inbound message queue
+    to the event log and to write inbound image files to image directories.
 
     Parameters:
         settings (Settings object): settings object created from YAML file
@@ -53,7 +53,7 @@ class ImageHub:
         # image queue of (node_and_view, image, type) to write to image directory
         self.image_q = deque(maxlen=settings.queuemax)
         # start system health monitoring & get system type (RPi vs Mac etc)
-        self.health = HealthMonitor(settings, self.image_q)
+        self.health = HealthMonitor(settings)
 
         self.patience = settings.patience * 60  # convert to seconds
 
@@ -63,12 +63,16 @@ class ImageHub:
         self.send_reply = self.image_hub.send_reply
 
         # check that data and log directories exist; create them if not
-        self.image_directory = self.build_dir(settings.image_directory, settings)
-        self.log_directory = self.build_dir(settings.log_directory, settings)
+        self.data_directory = self.build_dir(settings.data_directory, settings)
+        log_directory = os.path.join(self.data_directory, 'logs')
+        self.log_directory = self.build_dir(log_directory, settings)
         self.logfile = os.path.join(self.log_directory, 'imagehub.log')
-        print('image directory:', self.image_directory)
+        images_directory = os.path.join(self.data_directory, 'images')
+        self.images_directory = self.build_dir(images_directory, settings)
+        print('data directory:', self.data_directory)
         print('log directory:', self.log_directory)
         print('log file:', self.logfile)
+        print('images directory:', self.images_directory)
         self.log = None
 
     def build_dir(self, directory, settings):
@@ -104,11 +108,11 @@ class ImageHub:
         type = message[1]  # type is the second delimited field in text
         t0 = type[0]  # the first character of type is unique & compares faster
 
-        if t0 == 'H':  # Heartbeat message; fast return before testing anyting else
+        if t0 == 'H':  # Heartbeat message; return before testing anything else
             return 'OK'
         elif t0 == "i":  # image
             pass  # ignore image type; only saving jpg images for now
-        elif t0 == 'j':  # jpg
+        elif t0 == 'j':  # jpg; append to image_q
             self.image_q.append((image_filename, image, t0,))
             # writing image files from image_q will be done in thread later
             # for testing for now, pop image_q and write the image file here
@@ -177,8 +181,8 @@ class Settings:
             self.queuemax = self.config['hub']['queuemax']
         else:
             self.queuemax = 500
-        if 'hub_data_directory' in self.config['hub']:
-            self.data_directory = self.config['hub']['hub_data_directory']
+        if 'data_directory' in self.config['hub']:
+            self.data_directory = self.config['hub']['data_directory']
         else:
             self.data_directory = 'imagehub_data'
 
