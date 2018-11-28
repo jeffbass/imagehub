@@ -172,21 +172,15 @@ class Settings:
         if 'patience' in self.config['hub']:
             self.patience = self.config['hub']['patience']
         else:
-            self.patience = 10  # default is to wait 10 minutes for hub reply
+            self.patience = 10  # default is to wait 10 minutes for imagenodes
         if 'queuemax' in self.config['hub']:
             self.queuemax = self.config['hub']['queuemax']
         else:
             self.queuemax = 500
-        if 'image_directory' in self.config['hub']:
-            self.image_directory = self.config['hub']['image_directory']
+        if 'hub_data_directory' in self.config['hub']:
+            self.data_directory = self.config['hub']['hub_data_directory']
         else:
-            self.image_directory = 'imagehub_data'
-        if 'log_directory' in self.config['hub']:
-            self.log_directory = self.config['hub']['log_directory']
-        else:
-            self.log_directory = 'imagehub_logs'
-        self.nodename = None
-        self.heartbeat = None
+            self.data_directory = 'imagehub_data'
 
     def print_settings(self, title=None):
         """ prints the settings in the yaml file using pprint()

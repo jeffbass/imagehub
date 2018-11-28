@@ -4,5 +4,4 @@ hub:
   queuemax: 500
   patience: 1  # how often to log a lack of message in minutes
   print_settings: False
-  image_directory: imagehub_data
-  log_directory: imagehub_logs
+  hub_data_directory: imagehub_data

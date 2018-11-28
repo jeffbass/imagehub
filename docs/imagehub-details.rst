@@ -2,10 +2,10 @@
 How **imagehub** works: pseudo code and data structure design
 ==============================================================
 
-Here's what **imagenode** does::
+Here's what **imagehub** does::
 
   # stuff done one time at program startup
-  Read a YAML file into Settings (e.g. cameras, ROIs, detector settings)
+  Read a YAML file into Settings (e.g. directory to store hub data)
   Start the Hub Events Log
   Instantiate a Hub using Settings:
     Instantiate Cameras
