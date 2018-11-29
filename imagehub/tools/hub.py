@@ -63,6 +63,7 @@ class ImageHub:
         self.send_reply = self.image_hub.send_reply
 
         # check that data and log directories exist; create them if not
+        # see docs for data directory structure including logs and images
         self.data_directory = self.build_dir(settings.data_directory, settings)
         log_directory = os.path.join(self.data_directory, 'logs')
         self.log_directory = self.build_dir(log_directory, settings)
@@ -86,7 +87,7 @@ class ImageHub:
         return full_directory
 
 
-    def process(self, text, image):
+    def process(self, text, image, settings):
         ''' process one incoming node message
 
         Every node message has a text part and an image part
@@ -115,19 +116,25 @@ class ImageHub:
             self.image_q.append((image_filename, image, t0,))
             # writing image files from image_q will be done in thread later
             # for testing for now, pop image_q and write the image file here
-            self.write_one_image()
+            self.write_one_image(settings)
         else:
             log_text = timestamp + ' ~ ' + text
             self.log.info(log_text)
             print(log_text)
         return b'OK'
 
-    def write_one_image(self):
+    def write_one_image(self, settings):
         # when actually writing images, need to stop if too many have been
         # written, to prevent disk fillup; need to set limits in imagehub.yaml
         filename, image, type = self.image_q.popleft()
+        date = filename[-26:-16]
         print('filename and image type:', filename, type)
-        pass
+        print('    would go into directory:', date)
+        date_directory = os.path.join(self.images_directory, date)
+        date_directory = self.build_dir(date_directory, settings)
+        full_file_name = os.path.join(date_directory, filename)
+        print('Full file name would be:')
+        print('   ', full_file_name)
 
     def handle_timeout(self):
         timestamp = datetime.now().isoformat().replace(':', '.')

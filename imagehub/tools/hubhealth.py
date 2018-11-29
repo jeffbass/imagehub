@@ -13,11 +13,10 @@ from tools.utils import interval_timer
 class HealthMonitor:
     """ Methods and attributes to measure and tune network and system stability
 
-    Provides methods to send network heartbeat messages, determine system type
-    (e.g., Raspberry Pi vs. Mac), and fix problems.
+    Provides methods determine system type
+    (e.g., Raspberry Pi vs. Mac), and fix some common problems.
 
-    Mostly a few example methods so far; send_heartbeat() has been very helpful
-    in fixing some odd WiFi networking problems.
+    Mostly a few example methods so far.
 
     Parameters:
         settings (Settings object): settings object created from YAML file

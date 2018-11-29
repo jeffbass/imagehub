@@ -36,7 +36,7 @@ def main():
             except Patience.Timeout:  # if no timely message from any node
                 hub.handle_timeout()
                 continue
-            reply = hub.process(text, image)
+            reply = hub.process(text, image, settings)
             hub.send_reply(reply)
     except (KeyboardInterrupt, SystemExit):
         log.warning('Ctrl-C was pressed or SIGTERM was received.')
