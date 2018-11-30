@@ -132,9 +132,14 @@ class ImageHub:
         print('    would go into directory:', date)
         date_directory = os.path.join(self.images_directory, date)
         date_directory = self.build_dir(date_directory, settings)
-        full_file_name = os.path.join(date_directory, filename)
+        full_file_name = os.path.join(date_directory, filename) + ".jpg"
         print('Full file name would be:')
         print('   ', full_file_name)
+        # write the image file to disk using full_file_name
+        with open(full_file_name,"wb") as f:
+            # only writes jpg image type without checking for image type
+            #   this is a design choice for now, but may need to change
+            f.write(image)
 
     def handle_timeout(self):
         timestamp = datetime.now().isoformat().replace(':', '.')
