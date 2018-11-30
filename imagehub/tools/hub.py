@@ -46,9 +46,6 @@ class ImageHub:
         ret_code, jpg_buffer = cv2.imencode(
             ".jpg", self.tiny_image, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
         self.tiny_jpg = jpg_buffer # matching tiny blank jpeg
-        test_image = cv2.imdecode(np.fromstring(jpg_buffer, dtype='uint8'), -1)
-        print('Tiny image translated to jpg and back OK:',
-            np.array_equal(self.tiny_image, test_image))
 
         # image queue of (node_and_view, image, type) to write to image directory
         self.image_q = deque(maxlen=settings.queuemax)
@@ -56,6 +53,7 @@ class ImageHub:
         self.health = HealthMonitor(settings)
 
         self.patience = settings.patience * 60  # convert to seconds
+        self.userdir = settings.userdir
 
         # open ZMQ hub using imagezmq
         self.image_hub = imagezmq.ImageHub()
@@ -64,22 +62,23 @@ class ImageHub:
 
         # check that data and log directories exist; create them if not
         # see docs for data directory structure including logs and images
-        self.data_directory = self.build_dir(settings.data_directory, settings)
+        self.data_directory = self.build_dir(settings.data_directory)
         log_directory = os.path.join(self.data_directory, 'logs')
-        self.log_directory = self.build_dir(log_directory, settings)
+        self.log_directory = self.build_dir(log_directory)
         self.logfile = os.path.join(self.log_directory, 'imagehub.log')
         images_directory = os.path.join(self.data_directory, 'images')
-        self.images_directory = self.build_dir(images_directory, settings)
-        print('data directory:', self.data_directory)
-        print('log directory:', self.log_directory)
-        print('log file:', self.logfile)
-        print('images directory:', self.images_directory)
+        self.images_directory = self.build_dir(images_directory)
         self.log = None
 
-    def build_dir(self, directory, settings):
+        self.image_writing_thread = threading.Thread(
+                                    target=self.image_writer)
+        self.keep_writing = True
+        self.image_writing_thread.start()
+
+    def build_dir(self, directory):
         """Build full directory name from settings directory from yaml file
         """
-        full_directory = os.path.join(settings.userdir,directory)
+        full_directory = os.path.join(self.userdir, directory)
         try:
             os.mkdir(full_directory)
         except FileExistsError:
@@ -114,27 +113,32 @@ class ImageHub:
             pass  # ignore image type; only saving jpg images for now
         elif t0 == 'j':  # jpg; append to image_q
             self.image_q.append((image_filename, image, t0,))
-            # writing image files from image_q will be done in thread later
-            # for testing for now, pop image_q and write the image file here
-            self.write_one_image(settings)
+            # writing image files from image_q is normally done in a thread
+            # but for unthreaded testing, uncomment below to write every image
+            # self.write_one_image()
         else:
             log_text = timestamp + ' ~ ' + text
             self.log.info(log_text)
             print(log_text)
         return b'OK'
 
-    def write_one_image(self, settings):
+    def image_writer(self):
+        # writes all the images in the image_q
+        # run as a separate thread, started in the class constructor
+        while self.keep_writing:
+            if len(self.image_q) > 0:
+                self.write_one_image()
+            else:
+                sleep(0.0000001) # sleep before checking image_q again
+
+    def write_one_image(self):
         # when actually writing images, need to stop if too many have been
         # written, to prevent disk fillup; need to set limits in imagehub.yaml
         filename, image, type = self.image_q.popleft()
         date = filename[-26:-16]
-        print('filename and image type:', filename, type)
-        print('    would go into directory:', date)
         date_directory = os.path.join(self.images_directory, date)
-        date_directory = self.build_dir(date_directory, settings)
+        date_directory = self.build_dir(date_directory)
         full_file_name = os.path.join(date_directory, filename) + ".jpg"
-        print('Full file name would be:')
-        print('   ', full_file_name)
         # write the image file to disk using full_file_name
         with open(full_file_name,"wb") as f:
             # only writes jpg image type without checking for image type
@@ -151,6 +155,13 @@ class ImageHub:
     def closeall(self):
         """ Close all resources & write any images remaining in image_q.
         """
+        # write any any images left in queue to files
+        self.keep_writing = False  # signals the image writing thread to stop
+        # wait for 1 second, then write any images left in the image_q
+        sleep(1)
+        print('Images in image_q at close:', len(self.image_q))
+        while len(self.image_q) > 0:
+            self.write_one_image()
         pass
 
 class Settings:
