@@ -70,6 +70,9 @@ class ImageHub:
         self.images_directory = self.build_dir(images_directory)
         self.log = None
 
+        self.max_images_write = settings.max_images_write
+        self.image_count = 0  # count of images written in current directory
+        self.first_time_over_max = True  # is this the first time max exceeded?
         self.image_writing_thread = threading.Thread(
                                     target=self.image_writer)
         self.keep_writing = True
@@ -81,6 +84,8 @@ class ImageHub:
         full_directory = os.path.join(self.userdir, directory)
         try:
             os.mkdir(full_directory)
+            self.image_count = 0  # Each new image directory gets a new 0 count
+            self.first_time_over = True  # if exceeded, this is first time
         except FileExistsError:
             pass
         return full_directory
@@ -117,9 +122,9 @@ class ImageHub:
             # but for unthreaded testing, uncomment below to write every image
             # self.write_one_image()
         else:
-            log_text = timestamp + ' ~ ' + text
+            log_text = text  # may strip spaces later?
             self.log.info(log_text)
-            print(log_text)
+            print(timestamp + '~' + log_text)
         return b'OK'
 
     def image_writer(self):
@@ -138,16 +143,20 @@ class ImageHub:
         date = filename[-26:-16]
         date_directory = os.path.join(self.images_directory, date)
         date_directory = self.build_dir(date_directory)
+        self.image_count += 1
+        if self.image_count > self.max_images_write:
+            if self.first_time_over_max:
+                self.log.warning('Max images written. Writing stopped.')
+                self.first_time_over_max = False
+            return  # This directory has hit its maximum number of images
         full_file_name = os.path.join(date_directory, filename) + ".jpg"
         # write the image file to disk using full_file_name
         with open(full_file_name,"wb") as f:
-            # only writes jpg image type without checking for image type
-            #   this is a design choice for now, but may need to change
             f.write(image)
 
     def handle_timeout(self):
         timestamp = datetime.now().isoformat().replace(':', '.')
-        message = timestamp + ' ~ ' + 'No messages received for ' + str(
+        message = 'No messages received for ' + str(
             self.patience // 60) + ' minutes.'
         self.log.info(message)
         pass
@@ -209,6 +218,10 @@ class Settings:
             self.data_directory = self.config['hub']['data_directory']
         else:
             self.data_directory = 'imagehub_data'
+        if 'max_images_write' in self.config['hub']:
+            self.max_images_write = self.config['hub']['max_images_write']
+        else:
+            self.max_images_write = 5000
 
     def print_settings(self, title=None):
         """ prints the settings in the yaml file using pprint()

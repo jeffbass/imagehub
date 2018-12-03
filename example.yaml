@@ -1,9 +1,8 @@
 # Settings file imagehub.yaml -- example with all settings
 ---
 hub:
-  queuemax: 500
+  queuemax: 500 # maximum size of queue of images to write
   patience: 1  # how often to log a lack of message in minutes
   print_settings: False
   data_directory: imagehub_data
-  max_images_write: 500  # a global cap on images to write in one day
-  # also may want max images per node or per hour or ?
+  max_images_write: 500  # a cap on images to write in one day

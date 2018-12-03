@@ -1,5 +1,5 @@
 ==============================================
-imagenode Settings and the imagenode.yaml file
+ImageHub Settings and the imagehub.yaml file
 ==============================================
 
 .. contents::
@@ -7,6 +7,13 @@ imagenode Settings and the imagenode.yaml file
 ========
 Overview
 ========
+****Note to self*****
+The max files per directory is the most important option and the most difficult
+to explain. imagehub logic starts a new directory each time the date changes.
+So, the max_images_write parameter is set to 0 each time a new directory is
+created. And the image_count in incremented each time an image is written. When
+image_count exceeds max_images_write, there is no more writing in that directory.
+Writing resumes when a new directory is created (normally when the date changes).
 
 **imagenode** is the image capture and sending portion of a computer vision
 pipeline that is typically run on multiple computers. While the primary purpose is

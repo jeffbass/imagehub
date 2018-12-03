@@ -28,7 +28,7 @@ def main():
     log = start_logging(hub)
     log.info('Starting imagehub.py')
     try:
-        # forever event loop
+        # forever event loop: receive & process images and text from imagenodes
         while True:
             try:
                 with Patience(hub.patience):
