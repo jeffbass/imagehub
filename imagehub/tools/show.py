@@ -26,7 +26,20 @@ class Hubshow:
     One ImageHub is instantiated during the startup of the imagehub.py
     """
     def __init__(self, settings):
-        pass
+        # Check that numpy and OpenCV are OK; will get traceback error if not
+        self.tiny_image = np.zeros((3,3), dtype="uint8")  # tiny blank image
+        ret_code, jpg_buffer = cv2.imencode(
+            ".jpg", self.tiny_image, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
+        self.tiny_jpg = jpg_buffer # matching tiny blank jpeg
+
+        self.userdir = settings.userdir  # the users home directory ~
+
+        # check that data and log directories exist
+        # see docs for data directory structure including logs and images
+        self.data_directory = os.path.join(self.userdir, settings.data_directory)
+        self.log_directory = os.path.join(self.data_directory, 'logs')
+        self.logfile = os.path.join(self.log_directory, 'imagehub.log')
+        self.images_directory = os.path.join(self.data_directory, 'images')
 
     def menu():
         pass
