@@ -73,7 +73,7 @@ class ImageHub:
         self.max_images_write = settings.max_images_write
         self.image_count = 0  # count of images written in current directory
         self.first_time_over_max = True  # is this the first time max exceeded?
-        self.image_writing_thread = threading.Thread(
+        self.image_writing_thread = threading.Thread(daemon=True,
                                     target=self.image_writer)
         self.keep_writing = True
         self.image_writing_thread.start()
