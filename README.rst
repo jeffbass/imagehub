@@ -68,116 +68,104 @@ Once you have cloned **imagehub** to a directory on your local machine,
 you can run the tests using the instructions below. The instructions assume you
 have cloned both **imagehub** and **imagezmq** to the user home directory. It
 is also important that you have successfully run all the tests for **imagezmq**
-and for **imagenode**.
+and for **imagenode**. The recommended testing arrangement is to run **imagehub**
+on the same Mac (or other display computer) that you used to run the
+``imagezmq/tests/timing_receive_jpg_buf.py`` program when you tested **imagenode**.
 
 Running the Tests
 =================
 
-**imagenode** should be tested in stages, with each stage testing a little more
-functionality. The tests are numbered in the order in which they should be run
-to determine if **imagenode** is running correctly on your systems.
+**imagehub** should be tested after you have tested **imagenode**, because you
+will be using **imagenode** to send test images and event messages to
+**imagehub**.
 
-Test **imagenode** in the same virtualenv that you tested **imagenzmq** in. For
+Test **imagehub** in the same virtualenv that you tested **imagenzmq** in. For
 the **imagezmq** testing and for the **imagenode** testing, my virtualenv is
 called py3cv3.
 
-**imagenode** requires **imagezmq** be installed and working. Before running any
-tests with **imagenode**, be sure you have successfully installed **imagezmq**
-and run all of its tests. The **imagezmq** tests must run successfully on every
-computer you will be using **imagenode** on. You should then be able to run the
-tests below.
+To test **imagehub**, you will use the same setup as Test 2 for **imagenode**
+(see  `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_).
+You will run **imagenode** on a Raspberry Pi with a PiCamera, just as you did for
+**imagenode** Test 2. You will run **imagehub** on the same Mac (or other display
+computer) that you used to display the **imagenode** test images.
 
-Directory Structure for running the tests
------------------------------------------
-Neither **imagenode** or **imagezmq** are far enough along in their development
-to be pip installable. So they should both be git-cloned to any computer that
+Directory Structure for running the imagehub test
+-------------------------------------------------
+Neither **imagehub** or **imagezmq** are far enough along in their development
+to be pip installable. So they should both be git-cloned to the computer that
 they will be running on. I have done all testing at the user home
-directory of every computer. Here is a simplified directory layout::
+directory. Here is a simplified directory layout::
 
-  ~ # user home directory
-  +--- imagenode.yaml  # copied from one of the imagenode yaml files & edited
+  ~ # user home directory of the computer running imagehub
+  +--- imagehub.yaml  # copied from imagenode/imagenode.yaml
   |
-  +--- imagenode    # the git-cloned directory for imagenode
-  |    +--- sub directories include docs, imagenode, tests, yaml
+  +--- imagehub    # the git-cloned directory for imagehub
+  |    +--- sub directories include docs, imagehub, tests
   |
-  +--- imagezmq     # the git-cloned directory for imagezmq
-       +--- sub directories include docs, imagezmq, tests
+  +--- imagezmq    # the git-cloned directory for imagezmq
+  |   +--- sub directories include docs, imagezmq, tests
+  |
+  +--- imagehub_data   # this directory will be created by imagehub
+      +--- images      # images will be saved here
+      +--- logs        # logs containing event messages will be saved here
 
 This directory arrangement, including docs, imagenode code, tests, etc. is a
 common development directory arrangement on GitHub. Using git clone from your
 user home directory (either on a Mac, a RPi or other Linux computer) will
 put both the **imagenode** and **imagezmq** directories in the right place
-for testing.
+for testing. The **imagehub** program creates a directory (imagehub_data) and
+2 subdirectories (images and logs) to store the images and logs of event
+messages it receives from **imagenode** running on one or more RPi's or other
+computers.
 
-Test 1: Running **imagenode** with **imagezmq** both running on a Mac
----------------------------------------------------------------------
-**The first test** runs both the sending program **imagenode** and the receiving
-program **imagezmq** timing_receive_jpg_buf.py (acting as a test hub) on
-a Mac (or linux computer) with a webcam. It tests that the **imagenode** software
-is installed correctly and that the ``imagenode.yaml`` file has been copied and
-edited in a way that works. It uses the webcam on the Mac for testing. It uses a
-"lighted" versus "dark" detector applied to a specified ROI.
+Test 1: Running **imagehub** with a single **imagenode** sender
+---------------------------------------------------------------
+**The first test** uses a single Raspberry Pi computer running **imagenode**
+with **imagehub** running on Mac or other display computer.
+It tests that the **imagehub** software is installed correctly and that the
+``imagehub.yaml`` file has been copied and edited in a way that works.
 
-Test 2: Sending a light detector stream of images from RPi PiCamera to a Mac
-----------------------------------------------------------------------------
-**The second test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
-(acting as a test hub) on a Mac (or Linux computer). It tests that the
-**imagenode** software is installed correctly on the RPi and that
-the ``imagenode.yaml`` file has been copied and edited in a way that works.
-It tests that the **imagezmq** communication is working between the Raspberry Pi
-and the Mac. It also tests the Picamera. It uses a "lighted" versus "dark"
-detector applied to a specified ROI.
+Test 2: Running **imagehub** with 2 **imagenode** senders simultaneously
+------------------------------------------------------------------------
+**The second test** runs **imagenode** on 2 Raspberry Pi computers,
+with **imagehub** receiving images and event messages from both RPi's at
+the same time. The event logs and image files will record what is sent
+from both RPi's.
 
-Test 3: Sending a motion detector stream of images from RPi PiCamera to a Mac
------------------------------------------------------------------------------
-**The third test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
-(acting as a test hub) on a Mac (or Linux computer). It is very similar to Test
-2, except that it uses a "moving" versus "still" motion detector applied to a
-specified ROI.
+Further details of running the 2 tests are `here <docs/testing.rst>`_.
 
-Test 4: Sending temperature readings from RPi temperature sensor to a Mac
--------------------------------------------------------------------------
-**the fourth test** runs **imagenode** on a Raspberry Pi, using **imagezmq**
-(acting as a test hub) on a Mac (or Linux computer). It allows testing of the
-temperature sensor capabilities of **imagenode**. It requires setting up a
-DS18B20 temperature sensor and connecting it appropriately to RPi GPIO pin 4.
-
-The details of running the 4 tests are `here <docs/testing.rst>`_.
-
-Running **imagenode** in production
-===================================
+Running **imagehub** in production
+==================================
 Running the test programs requires that you leave a terminal window open, which
 is helpful for testing, but not for production runs. I have provided an example
-imagenode.sh shell script that shows how I start imagenodes for the production
-programs observing my small farm. The key is to start the imagenode.py program
+imagehub.sh shell script that shows how I start **imagehub** for the production
+programs observing my small farm. The key is to start the imagehub.py program
 1) in the correct virtualenv and 2) as a background task that allows the program
 to keep running when the terminal window is closed. There are multiple ways to
-start the imagenode.sh program when the RPi starts: use cron, use screen, or use
-the systemctl / systemd service protocol that linux currently uses for startup.
+start the imagehub.sh program when the RPi starts: use cron, use screen, or use
+the systemctl / systemd service protocol that linux services use for startup.
 The best one to use is the one that you prefer and are familiar with, so I won't
 make a specific recommendation here.
 
 In production, you would want to set the test options used to print settings
 to false; they are only helpful during testing. All errors and information
-are sent to imagenode.log in the same directory as imagenode.py. You will
+are sent to imagehub.log in the same directory as imagehub.py. You will
 probably want the log to be in a different directory for production; the log
 file location can be set by changing it in the logging function at the bottom
-of the imagenode.py program file.
+of the imagehub.py program file.
 
 Additional Documentation
 ========================
-- `How imagenode works <docs/imagenode-details.rst>`_.
-- `How imagenode is used in a larger project <docs/imagenode-uses.rst>`_.
+- `How imagehub works <docs/imagehub-details.rst>`_.
 - `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
-- The **imagehub** software that receives and files images from multiple RPi's
-  running **imagenode** is ``(coming soon)``.
+- `The imagenode program that captures and sends images <https://github.com/jeffbass/imagezmq>`_.
 - `The larger farm automation / computer vision project <https://github.com/jeffbass/yin-yang-ranch>`_.
   This project also shows the overall system architecture.
 
 Contributing
 ============
-**imagenode** is in early development and testing. I welcome open issues and
-pull requests, but because the programs are still rapidly evolving, it is best
+**imagehub** is in early development and testing. I welcome open issues and
+pull requests, but because the code is still rapidly evolving, it is best
 to open an issue with some discussion before submitting any pull requests or
 code changes.
 
@@ -188,15 +176,3 @@ Acknowledgments
 - **PyZMQ** serialization examples provided a starting point for **imagezmq**.
   See the
   `PyZMQ documentation <https://pyzmq.readthedocs.io/en/latest/index.html>`_.
-- **OpenCV** and its Python bindings provide great scaffolding for computer
-  vision projects large or small: `OpenCV.org <https://opencv.org/>`_.
-- **imutils** is a collection of Python classes and methods that allows computer
-  vision programs using OpenCV to be cleaner and more compact. It has a very
-  helpful threaded image reader for Raspberry PiCamera modules or webcams. It
-  allowed me to shorten my camera reading programs on the Raspberry Pi by half:
-  `imutils on GitHub <https://github.com/jrosebr1/imutils>`_. **imutils** is an
-  open source project authored by Adrian Rosebrock.
-- The motion detection function detect_motion() borrowed a lot of helpful code
-  from a motion detector
-  `tutorial post <https://www.pyimagesearch.com/2015/06/01/home-surveillance-and-motion-detection-with-the-raspberry-pi-python-and-opencv/>`_
-  by Adrian Rosebrock of PyImageSearch.com.

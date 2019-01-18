@@ -6,7 +6,7 @@ running imaganode.py to capture and send selected images and event messages.
 
 Typically run as a service or background process. See README.rst for details.
 
-Copyright (c) 2018 by Jeff Bass.
+Copyright (c) 2019 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 

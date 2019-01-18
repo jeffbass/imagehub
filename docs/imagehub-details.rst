@@ -39,7 +39,7 @@ Here are the classes and data structures::
 The Cameras, Detectors and Detector Attributes are all specified in the YAML
 file. It details the (many!) settings needed to completely specify a Node.
 You can read more about the YAML file and get examples of settings at
-`imagenode Settings and the imagenode.yaml file <settings-yaml.rst>`_.
+`imagehub Settings and the imagehub.yaml file <settings-yaml.rst>`_.
 
 The ``HealthMonitor`` class is pretty simple so far. It determines what
 kind of computer **imagenode** is running on so that the right camera, sensor
@@ -56,8 +56,8 @@ image history directories.
 Messaging protocol for images and status messages
 =================================================
 
-By design, every message passed by **imagenode** to the **imagehub** (or to a
-test hub) has a specific format. Every message is sent using **imagezmq** and
+By design, every message passed by an **imagenode** to the **imagehub**
+has a specific format. Every message is sent using **imagezmq** and
 is a tuple::
 
   (text, image)
@@ -90,6 +90,11 @@ each message tuple, not shown here)::
 The template for **event** messages is::
   node name and view name|information|detected state
 
+For each **event** message received, the date / time is added and the message
+is added to the event log using Python's logging module. The log files grow
+to a set size (set by option ``log_max_size``) and then rotate, creating imagehub.log,
+imagehug.log.1, imagehub.log2, etc.
+
 Image messages look like this (the image itself is the 2nd part of each
 message tuple, not shown here)::
   WaterMeter|jpg|moving
@@ -100,100 +105,30 @@ message tuple, not shown here)::
 The template for **image** messages is::
     node name and view name|send_type|detector state
 
-When running tests, such as when using the **imagezmq** ``timing_receive_jpg_buf``
-program as a "test hub", the messages text portion will be displayed as the window
-label bar by the cv2.show() function.
+When **imagehub** receives an image message as formatted above, it adds the date and
+time to the nodename and saves the image in the images directory. The images
+directory is organized by date, so the final data directory and file structure
+looks like this::
 
-The node name and view name must be unique, because the node name and view name
-define the sorting criteria for how the messages and images are filed and stored.
-
-((TODO put more details here, including stuff about testing with status messages))
-
-Some Overall Design Choices (that may or may not be obvious)
-============================================================
-
-A YAML file was chosen for setting the **many** options needed to define what
-images to select and send. This seems more readable, especially for the nested
-options that are necessary to set up a motion detector, for example. Choices
-that were possible but rejected include using command line arguments, using a
-json configuration file and using a config.ini file (Python module is?)
-
-Every message from **imagenode** to the **imagehub** is a tuple::
-
-  (text, image)
-
-This allows **imagezmq** and **imagehub** to transfer and receive every message
-packet the same way, without any "what kind of packet is this?" if statements.
-Even when an event message has no image to send, a blank 1 pixel image is sent
-so that all ZMQ messages can have exactly the same tuple structure.
-
-Images can be sent in OpenCV / Numpy image format or in jpeg compressed form.
-The transmission type defaults to jpeg, but can be set to "image" in the YAML
-settings file. Once set, all images will be sent in the same format thereafter.
-This means that no "image or jpg?" if statement is needed in the image sending
-loop. This means that **imagehub** has a similar option that is set to image or
-jpg at startup.
-
-To allow the highest frame rate possible, several design choices were made
-to make the event loop as fast as possible. This makes the initialization code
-much longer but enables far fewer if statements and fewer dictionary gets in the
-event loop. The result is that the __init__() functions for the Settings,
-Camera, and Detector classes are long sequences of if statements, but there are
-relatively few if statements in the event loop. These design choices were
-the most helpful in speeding up the event loop:
-
-1. Using multiple if statements in Settings.__init__ to parse nested yaml
-  dictionary to a flat set of node Attributes.
-2. Using function templates to set up functions that are specific to an option
-  choice. For example, the ``send_frame function`` is set to either the
-  ``send_jpg_frame`` function or ``send_image_frame`` function during __init__,
-  so that there does not to be an if statement about image type in the event
-  loop itself.
-
-An example of design choice 1: camera-->event loop-->frames-to-send becomes
-camera.frames instead of camera['send_amount']['event']. This makes the
-Settings.__init__ a bit hard to read, but makes the event loop only reference
-first level attributes.  That means that this nested dictionary get::
-
-  send_multiple(camera['send_amount']['event'])
-
-becomes a first level attribute of camera object::
-
-  send_multiple(camera.frames)
-
-An example for design choice 2 is the choice of jpg vs image execution. Instead of
-(use python code rst display here)::
-
-  # inside event loop there is if statement about jpg vs. image choice
-  # design choice is to NOT to do it this way!
-  for image in send_q:
-    if settings.send_type == 'jpg':
-        send_jpg(image)
-    else:
-        send_image(image)
-
-Instead, the choice of frame type is moved to a one-time function choice in
-Settings.__init__. That way, there is no if statement needed in the event
-loop::
-
-  # make the jpg vs. image choice one time only in Settings.__init__
-  if settings.jpg:
-      send_frame = send_jpg  # send_jpg is a jpg specific frame sending function
-  else:
-      send_frame = send_image  # send_image is image specific send function
-
-  # inside event loop, there are no if statements about jpg vs. image choice
-  for image in send_q:
-      send_frame()  # now there is no if statement in frame send loop
-
-These design choices make the Settings.__init__ code longer and more convoluted,
-but make the actual event loop faster and more readable. There is more
-refactoring to be done in this regard.
-
-The overall design of **imagenode** is around the image capture and detection
-event loop. Other sensors, e.g. temperature sensors, are managed from threads,
-one per sensor. These threads check the sensor at selectable time intervals,
-report a value, then sleep until the next time interval. The image capture
-and detection loop is the main thread and gets most of the cpu resources.
+  imagehub_data
+  ├── images
+  │   ├── 2018-12-30
+  │   │   ├── Barn-2018-12-30T23.13.31.620992.jpg
+  │   │   ├── WaterMeter-2018-12-30T23.08.35.151117.jpg
+  │   │   └──  # etc, etc. for additional images
+  │   ├── 2018-12-05
+  │   │   ├── Barn-2018-12-31T15.07.47.378240.jpg
+  │   │   ├── WaterMeter-2018-12-31T15.09.45.610104.jpg
+  │   │   ├── WaterMeter-2018-12-31T15.09.45.847916.jpg
+  │   │   └──  # etc, etc. for additional images
+  │   │
+  │   └──  # additional directories for each date
+  │
+  └── logs
+      ├── imagehub.log     # contains the most recent event messages
+      ├── imagehub.log.1   # ...contains earlier event messages
+      ├── imagehub.log.2   # ...contains even earlier event messages
+      └──  # etc, etc.
+    
 
 `Return to main documentation page README.rst <../README.rst>`_
