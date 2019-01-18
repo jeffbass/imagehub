@@ -2,44 +2,33 @@
 How **imagehub** works: pseudo code and data structure design
 ==============================================================
 
-Here's what **imagehub** does::
+Imagenode sets up an imagezmq hub and waits to hear from imagenodes. When it
+receives an imagenode message, it files it by node name, date and time. It saves
+received images in image directories, with one directory per calendar date. It
+records event messages in an event log, organizing them by date node name.
+
+In pseudo code, here's what **imagehub** does::
 
   # stuff done one time at program startup
-  Read a YAML file into Settings (e.g. directory to store hub data)
+  Read a YAML file into Settings (e.g. what directory to store data)
   Start the Hub Events Log
-  Instantiate a Hub using Settings:
-    Instantiate Cameras
-    For each Camera:
-      Instantiate one or more Detectors (e.g. motion detector) with ROI etc.
-    Instantiate Sensors
-    Instantiate Lights (and turn them on as specified)
-    Read one test frame from camera to set actual frame size
+  Instantiate a Hub using Settings and activate an imagezmq hub
 
-  # stuff done to read and process each frame
+  # stuff done to receive and process each incoming message
   Loop forever:
-    For each Camera:
-      Read a Camera image into image_queue
-      For each Detector:
-        Detect current_state using images in image_queue
-        If current_state has changed (e.g. motion started or motion stopped)
-          Send event_message and image_queue to hub
+    Receive a message tuple from any imagenode labelled by node name
+      If it is an event message, add it to the log
+      If it is an image, add it to the appropriate image directory
+      Send 'OK' reply to imagenode indicating message received
 
 Here are the classes and data structures::
 
   Class Settings (filled once by reading from the YAML file)
-  Class Hub (instantiated once using Settings)
-    Class Camera (can instantiate zero or more cameras)
-      Class Detector (instantiate one or more per camera)
-        Attributes: Detector_type, ROI_corners, parameters (threshold values, etc.)
-    Class Sensor (can instantiate zero or more sensors, e.g. temperaure probe)
-    Class Light (can instantiate setup of one or more LED lights)
-
+  Class ImageHub (instantiated once using Settings)
   Class HealthMonitor (methods for helping monitory system and network health)
 
-The Cameras, Detectors and Detector Attributes are all specified in the YAML
-file. It details the (many!) settings needed to completely specify a Node.
-You can read more about the YAML file and get examples of settings at
-`imagehub Settings and the imagehub.yaml file <settings-yaml.rst>`_.
+The ``ImageHub`` class contains methods to make image directories, save image
+files and add event messages to the log.
 
 The ``HealthMonitor`` class is pretty simple so far. It determines what
 kind of computer **imagenode** is running on so that the right camera, sensor
@@ -129,6 +118,6 @@ looks like this::
       ├── imagehub.log.1   # ...contains earlier event messages
       ├── imagehub.log.2   # ...contains even earlier event messages
       └──  # etc, etc.
-    
+
 
 `Return to main documentation page README.rst <../README.rst>`_
