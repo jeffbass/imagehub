@@ -8,11 +8,10 @@ Introduction
 **imagehub** receives and stores event messages and event images from multiple
 sources simultaneously. The sources are Raspberry Pi (and other) computers
 running **imaganode** to capture and send selected images and event messages.
+By design, **imagehub** is a very simple program. Analysis of images or
+responses to queries about event logs are handled by other programs.
 
-**imagehub** also has a playback program that can playback images and events
-that is has stored:
-
-**Show a playback of images and logs for a given time period**
+**Show the event log and related coyote images side by side**
 .. image:: docs/images/still_and_moving.png
 
 .. contents::
@@ -25,55 +24,51 @@ pipeline that is run on multiple computers. Multiple Raspberry Pi (RPi)
 (and other) computers run **imagenode** to capture images, detect motion, light,
 temperature values, etc. **imagenode** then sends event messages and selected
 images to **imagehub**, which sorts and files the events and messages for later
-analysis.  A typical setup has 8 to 12 sending computer for each **imagehub**.
+analysis.  A typical setup has 8 to 12 sending computers for each **imagehub**.
 See `Using imagehub in distributed computer vision projects <docs/imagehub-uses.rst>`_
 for a more detailed explanation of the overall project design. See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
 **imagenode** <--> **imagezmq** <--> **imagehub** system.
 
-Imagenode Capabilities
+imagehub Capabilities
 ======================
 
-- Continuously captures images using PiCameras or USB webcams.
-- Performs image transformation and motion, light or color detection.
-- Sends detected events and relevant images to an image hub using **imagezmq**.
-- Can capture and send other sensor data gathered using the GPIO pins.
-- Can control lighting (e.g., white LED or Infrared LED area lights).
-- Sends event messages (e.g., water is flowing) as well as images.
+- Continuously receives and stores images from **imagenode** via **imagezmq**.
+- Continuously receives and logs event messages as well.
+- Uses threading for image writing to enhance responsiveness of receiving images.
+- Threading can be replaced with multiprocessing with minimal code changes.
+- Can receive event messages and images from 10 or more Raspberry Pi's
+  simultaneously.
 
 Dependencies and Installation
 =============================
 
-**imagenode** has been tested with:
+**imagehub** has been tested with:
 
 - Python 3.5 and 3.6
 - OpenCV 3.3
-- Raspian Stretch and Raspian Jessie
 - PyZMQ 16.0
 - imagezmq 0.0.2
-- imutils 0.4.3 (used get to images from PiCamera)
 
-**imagenode** captures images and uses **imagezmq** to transfer the images.
-It is best to install and test **imagezmq** before installing **imagenode**.
+**imagehub** uses **imagezmq** to receive event messages and images that are
+captured and sent by **imagenode**. You will need to install and test both
+**imagezmq** and **imagenode** before using **imagehub**.
 The instructions for installing and testing **imagezmq** are in the
 `imagezmq GitHub repository <https://github.com/jeffbass/imagezmq.git>`_.
+The instructions for installing and testing **imagenode** are in the
+`imagenode GitHub repository <https://github.com/jeffbass/imagenode.git>`_.
 
-**imagenode** is still in early development, so it is not yet in PyPI. Get it by
+**imagehub** is still in early development, so it is not yet in PyPI. Get it by
 cloning the GitHub repository::
 
-    git clone https://github.com/jeffbass/imagenode.git
+    git clone https://github.com/jeffbass/imagehub.git
 
-Once you have cloned **imagenode** to a directory on your local machine,
+Once you have cloned **imagehub** to a directory on your local machine,
 you can run the tests using the instructions below. The instructions assume you
-have cloned both **imagehub** and **imagezmq** to the user home directory.
-
-**imagenode** requires a *LOT* of settings: settings for the camera, settings
-for the GPIO pins, settings for detector and each ROI, etc. The settings are
-kept in a YAML file and are changed to "tune" the image capture, ROIs, motion
-detection and computer vision parameters. An example YAML file is included in
-the "yaml" directory. An explanation of the yaml file and adjusting the settings
-is in `imagenode Settings and YAML files <docs/settings-yaml.rst>`_.
+have cloned both **imagehub** and **imagezmq** to the user home directory. It
+is also important that you have successfully run all the tests for **imagezmq**
+and for **imagenode**.
 
 Running the Tests
 =================
