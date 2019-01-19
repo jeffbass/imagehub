@@ -5,14 +5,20 @@ imagehub: Receive and save images and events from imagenodes
 Introduction
 ============
 
-**imagehub** receives and stores event messages and event images from multiple
-sources simultaneously. The sources are Raspberry Pi (and other) computers
-running **imaganode** to capture and send selected images and event messages.
-By design, **imagehub** is a very simple program. Analysis of images or
-responses to queries about event logs are handled by other programs.
+**imagehub** receives and stores images and event messages from multiple
+sources simultaneously. The sources are Raspberry Pi and other computers
+running **imaganode** to capture and send images and event messages.
 
-**Show the event log and related coyote images side by side**
+Here is a pair of images shown with their corresponding log entries. These were
+captured by a Raspberry Pi PiCamera and an infrared floodlight:
+
 .. image:: docs/images/still_and_moving.png
+
+The log shows the coyote motion events (in **bold**) as "Barn". It also shows
+events from 2 other Raspberry Pi computers that were sending at the same time,
+"WaterMeter" and "BackDeck". Motion events create camera images like the
+2 shown above. Temperature events are gathered by sensors attached to the
+Raspberry Pi computers' GPIO pins.
 
 .. contents::
 
@@ -20,26 +26,36 @@ Overview
 ========
 
 **imagehub** is the "receive and store" part of a distributed computer vision
-pipeline that is run on multiple computers. Multiple Raspberry Pi (RPi)
+pipeline that is run on multiple computers. Multiple Raspberry Pi
 (and other) computers run **imagenode** to capture images, detect motion, light,
 temperature values, etc. **Imagenode** then sends event messages and selected
 images to **imagehub**, which files the events and images for later
 analysis.  My typical setup has 8 to 12 sending computers for each **imagehub**.
-See `Using imagenode in distributed computer vision projects
-<https://github.com/jeffbass/imagehub/imagenode-uses.rst>_` for a more detailed
-explanation of the overall project design (opens in a different repo). See the
+
+By design, **imagehub** is a very simple program. It does 2 things:
+
+1. It receives images and stores them.
+2. It receives event messages and logs them.
+
+It does this from multiple sources simultaneously. The sources are typically a
+bunch of Raspberry Pi computers with PiCameras and temperature sensors. Keeping
+**imagehub** simple allows it to be fast enough to reliably store data from
+multiple sources. Analysis of images and responses to queries
+are handled by other programs. See `Using imagenode in distributed computer
+vision projects <https://github.com/jeffbass/imagenode/imagenode-uses.rst>_`
+for a more detailed explanation of the overall project design. See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
-**imagenode** <--> **imagezmq** <--> **imagehub** system. (opens in a different
-repo).
+**imagenode** <--> **imagezmq** <--> **imagehub** system.
 
-imagehub Capabilities
-=====================
 
-- Continuously receives and save images from multiple Raspberry Pi's
-  simultaneously.
-- Continuously receives and logs event messages also.
-- Uses threading for image writing to enhance responsiveness of receiving images.
+
+imagehub Features
+=================
+
+- Receives and save images from multiple Raspberry Pi's simultaneously.
+- Receives and logs event messages from multiple RPi's simultaneously.
+- Uses threading for image writing to enhance responsiveness.
 - Threading can be replaced with multiprocessing with minimal code changes.
 
 Dependencies and Installation
