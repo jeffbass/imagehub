@@ -19,27 +19,28 @@ responses to queries about event logs are handled by other programs.
 Overview
 ========
 
-**imagehub** is the "receive and store" part of a computer vision
+**imagehub** is the "receive and store" part of a distributed computer vision
 pipeline that is run on multiple computers. Multiple Raspberry Pi (RPi)
 (and other) computers run **imagenode** to capture images, detect motion, light,
-temperature values, etc. **imagenode** then sends event messages and selected
-images to **imagehub**, which sorts and files the events and messages for later
-analysis.  A typical setup has 8 to 12 sending computers for each **imagehub**.
-See `Using imagehub in distributed computer vision projects <docs/imagehub-uses.rst>`_
-for a more detailed explanation of the overall project design. See the
+temperature values, etc. **Imagenode** then sends event messages and selected
+images to **imagehub**, which files the events and images for later
+analysis.  My typical setup has 8 to 12 sending computers for each **imagehub**.
+See `Using imagenode in distributed computer vision projects
+<https://github.com/jeffbass/imagehub/imagenode-uses.rst>_` for a more detailed
+explanation of the overall project design (opens in a different repo). See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
-**imagenode** <--> **imagezmq** <--> **imagehub** system.
+**imagenode** <--> **imagezmq** <--> **imagehub** system. (opens in a different
+repo).
 
 imagehub Capabilities
-======================
+=====================
 
-- Continuously receives and stores images from **imagenode** via **imagezmq**.
-- Continuously receives and logs event messages as well.
+- Continuously receives and save images from multiple Raspberry Pi's
+  simultaneously.
+- Continuously receives and logs event messages also.
 - Uses threading for image writing to enhance responsiveness of receiving images.
 - Threading can be replaced with multiprocessing with minimal code changes.
-- Can receive event messages and images from 10 or more Raspberry Pi's
-  simultaneously.
 
 Dependencies and Installation
 =============================
@@ -89,8 +90,8 @@ You will run **imagenode** on a Raspberry Pi with a PiCamera, just as you did fo
 **imagenode** Test 2. You will run **imagehub** on the same Mac (or other display
 computer) that you used to display the **imagenode** test images.
 
-Directory Structure for running the imagehub test
--------------------------------------------------
+Directory Structure for running the imagehub tests
+--------------------------------------------------
 Neither **imagehub** or **imagezmq** are far enough along in their development
 to be pip installable. So they should both be git-cloned to the computer that
 they will be running on. I have done all testing at the user home
@@ -132,7 +133,7 @@ with **imagehub** receiving images and event messages from both RPi's at
 the same time. The event logs and image files will record what is sent
 from both RPi's.
 
-Further details of running the 2 tests are `here <docs/testing.rst>`_.
+Further details of running the tests are `here <docs/testing.rst>`_.
 
 Running **imagehub** in production
 ==================================
