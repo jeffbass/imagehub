@@ -83,7 +83,7 @@ bad experience when I forgot to change the ``continuous`` option to ``detected
 event`` on one of my RPi nodes.
 
 The ``max_images_write`` option is the most important option and the most difficult
-to explain. **imagehub** logic starts a new directory each time the date changes.
+to explain. **imagehub** starts a new image directory each time the date changes.
 So, the max_images_write parameter is set to 0 each time a new directory is
 created. And the image_count in incremented each time an image is written. When
 image_count exceeds ``max_images_write``, there is no more writing in that directory.
