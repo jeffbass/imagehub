@@ -1,5 +1,5 @@
 ============================================================
-imagehub: Receive and save images and events from imagenodes
+imagehub: Receive & save images from multiple Raspberry Pi's
 ============================================================
 
 Introduction
@@ -12,7 +12,7 @@ running **imaganode** to capture and send images and event messages.
 Here is a pair of images shown with their corresponding log entries. These were
 captured by a Raspberry Pi PiCamera and an infrared floodlight:
 
-.. image:: docs/images/still_and_moving.png
+.. image:: docs/images/coyote-events.png
 
 The log shows the coyote motion events (in **bold**) as "Barn". It also shows
 events from 2 other Raspberry Pi computers that were sending at the same time,
