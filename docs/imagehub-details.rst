@@ -1,6 +1,6 @@
-==============================================================
-How **imagehub** works: pseudo code and data structure design
-==============================================================
+======================================================
+How **imagehub** works: pseudo code and data structure
+======================================================
 
 Imagenode sets up an imagezmq hub and waits to hear from imagenodes. When it
 receives an imagenode message, it files it by node name, date and time. It saves
@@ -77,6 +77,7 @@ each message tuple, not shown here)::
   JeffOffice door|motion|still
 
 The template for **event** messages is::
+
   node name and view name|information|detected state
 
 For each **event** message received, the date / time is added and the message
@@ -92,6 +93,7 @@ message tuple, not shown here)::
   Garage|image|lighted
 
 The template for **image** messages is::
+
     node name and view name|send_type|detector state
 
 When **imagehub** receives an image message as formatted above, it adds the date and
