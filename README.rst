@@ -174,6 +174,7 @@ of the imagehub.py program file.
 Additional Documentation
 ========================
 - `How imagehub works <docs/imagehub-details.rst>`_.
+- `The imagehub Settings and the imagehub.yaml file <docs/settings-yaml.rst>`_.
 - `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
 - `The imagenode program that captures and sends images <https://github.com/jeffbass/imagezmq>`_.
 - `The larger farm automation / computer vision project <https://github.com/jeffbass/yin-yang-ranch>`_.
