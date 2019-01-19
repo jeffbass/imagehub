@@ -155,6 +155,6 @@ becomes part of the file name of each image and it labels each event in the log.
 
 There are a few settings in the imagehub.yaml file that specify the data
 directory, a maximum number of images to write, etc. You can learn more about
-these options in `ImageHub Settings and the imagehub.yaml file <docs/settings-yaml.rst>`_.
+these options in `ImageHub Settings and the imagehub.yaml file <settings-yaml.rst>`_.
 
 `Return to main documentation page README.rst <../README.rst>`_
