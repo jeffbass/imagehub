@@ -1,8 +1,8 @@
 # populates fields for >>>help(imagehub)
 __title__ = 'imagehub'
 __description__ = 'Receive and save images and events from imagenodes'
-__url__ = ''
-__version__ = '0.0.1'
+__url__ = 'https://github.com/jeffbass/imagehub'
+__version__ = '0.1.0'
 __author__ = 'Jeff Bass'
 __author_email__ = 'jeff@yin-yan-ranch.com'
 __license__ = 'MIT 1.0'

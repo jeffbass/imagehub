@@ -105,6 +105,8 @@ class ImageHub:
 
         '''
         message = text.split("|")
+        if len(message) < 2:  # a "send_test_image" that should not be saved
+            return b'OK'
         type = message[1]  # type is the second delimited field in text
         t0 = type[0]  # the first character of type is unique & compares faster
         if t0 == 'H':  # Heartbeat message; return before testing anything else
