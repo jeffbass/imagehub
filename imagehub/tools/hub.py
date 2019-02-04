@@ -126,7 +126,6 @@ class ImageHub:
         else:
             log_text = text  # may strip spaces later?
             self.log.info(log_text)
-            print(timestamp + '~' + log_text)
         return b'OK'
 
     def image_writer(self):
@@ -170,7 +169,6 @@ class ImageHub:
         self.keep_writing = False  # signals the image writing thread to stop
         # wait for 1 second, then write any images left in the image_q
         sleep(1)
-        print('Images in image_q at close:', len(self.image_q))
         while len(self.image_q) > 0:
             self.write_one_image()
         pass
