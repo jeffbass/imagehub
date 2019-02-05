@@ -1,0 +1,22 @@
+# imagehub service unit file
+# Jeff Bass, jeff@yin-yang-ranch.com
+# Defines imagehub.py as a systemd service
+# This file should be copied to /etc/systemd/system as root
+#   e.g. sudo cp imagehub.service /etc/systemd/system
+# Use usual systemctl start, stop, status restart, enable commands
+#   e.g. sudo systemctl start imagehub.service
+
+[Unit]
+Description=Imagehub Service
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/pi/imagehub/imagehub
+User=pi
+Restart=always
+RestartSec=5
+ExecStart=/home/pi/.virtualenvs/py3cv3/bin/python -u /home/pi/imagehub/imagehub/imagehub.py
+
+[Install]
+WantedBy=multi-user.target
