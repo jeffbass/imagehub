@@ -41,7 +41,7 @@ It does this from multiple sources simultaneously. The sources are typically a
 bunch of Raspberry Pi computers with PiCameras and temperature sensors. Keeping
 **imagehub** simple allows it to be fast enough to reliably store data from
 multiple sources. Analysis of images and responses to queries
-are handled by other programs. See `Using imagenode in distributed computer vision projects <https://github.com/jeffbass/imagenode/imagenode-uses.rst>`_
+are handled by other programs. See `Using imagenode in distributed computer vision projects <https://github.com/jeffbass/imagenode/blob/master/docs/imagenode-uses.rst>`_
 for a more detailed explanation of the overall project design. See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
