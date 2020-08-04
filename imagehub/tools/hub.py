@@ -190,8 +190,11 @@ class Settings:
     of the items in the YAML file (this is a property of Python dictionaries).
     """
 
-    def __init__(self):
-        userdir = os.path.expanduser("~")
+    def __init__(self, path):
+        if path:
+            userdir = path
+        else:
+            userdir = os.path.expanduser("~")
         self.userdir = userdir
         with open(os.path.join(userdir,"imagehub.yaml")) as f:
             self.config = yaml.safe_load(f)
