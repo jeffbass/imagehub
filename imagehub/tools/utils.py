@@ -7,7 +7,6 @@ License: MIT, see LICENSE for more details.
 import time
 import signal
 import logging
-from sys import platform
 
 def clean_shutdown_when_killed(signum, *args):
     """Close all connections cleanly and log shutdown
@@ -61,13 +60,11 @@ class Patience:
         self.seconds = seconds
 
     def __enter__(self):
-        if platform != "win32":
-            signal.signal(signal.SIGALRM, self.raise_timeout)
-            signal.alarm(self.seconds)
+        signal.signal(signal.SIGALRM, self.raise_timeout)
+        signal.alarm(self.seconds)
 
     def __exit__(self, *args):
-        if platform != "win32":
-            signal.alarm(0)    # disable alarm
+        signal.alarm(0)    # disable alarm
 
     def raise_timeout(self, *args):
         raise Patience.Timeout()
