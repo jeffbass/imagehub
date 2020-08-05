@@ -15,15 +15,22 @@ import signal
 import logging
 import logging.handlers
 import traceback
+import argparse
 from tools.utils import clean_shutdown_when_killed
 from tools.utils import Patience
 from tools.hub import Settings
 from tools.hub import ImageHub
 
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-p", "--path", required=False,
+	help="path to imagehub.yaml file")
+args = vars(ap.parse_args())
+
 def main():
     # set up controlled shutdown when Kill Process or SIGTERM received
     signal.signal(signal.SIGTERM, clean_shutdown_when_killed)
-    settings = Settings()  # get settings from YAML file
+    settings = Settings(path=args["path"])  # get settings from YAML file
     hub = ImageHub(settings)  # start ImageWriter, Timers, etc.
     log = start_logging(hub)
     log.info('Starting imagehub.py')
