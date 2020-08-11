@@ -6,7 +6,7 @@ running imaganode.py to capture and send selected images and event messages.
 
 Typically run as a service or background process. See README.rst for details.
 
-Copyright (c) 2019 by Jeff Bass.
+Copyright (c) 2020 by Jeff Bass.
 License: MIT, see LICENSE for more details.
 """
 
@@ -16,7 +16,6 @@ import logging
 import logging.handlers
 import traceback
 from tools.utils import clean_shutdown_when_killed
-from tools.utils import Patience
 from tools.hub import Settings
 from tools.hub import ImageHub
 
@@ -30,12 +29,7 @@ def main():
     try:
         # forever event loop: receive & process images and text from imagenodes
         while True:
-            try:
-                with Patience(hub.patience):
-                    text, image = hub.receive_next()
-            except Patience.Timeout:  # if no timely message from any node
-                hub.handle_timeout()
-                continue
+            text, image = hub.receive_next()
             reply = hub.process(text, image, settings)
             hub.send_reply(reply)
     except (KeyboardInterrupt, SystemExit):
