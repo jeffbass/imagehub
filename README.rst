@@ -62,10 +62,10 @@ Dependencies and Installation
 
 **imagehub** has been tested with:
 
-- Python 3.5 and 3.6
-- OpenCV 3.3
-- PyZMQ 16.0
-- imagezmq 0.0.2
+- Python 3.5, 3.6 and 3.7
+- OpenCV 3.3 and 4.0+
+- PyZMQ 16.0+
+- imagezmq 1.0.1+
 
 **imagehub** uses **imagezmq** to receive event messages and images that are
 captured and sent by **imagenode**. You will need to install and test both
