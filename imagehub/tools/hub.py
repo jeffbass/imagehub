@@ -52,7 +52,6 @@ class ImageHub:
         # start system health monitoring & get system type (RPi vs Mac etc)
         self.health = HealthMonitor(settings)
 
-        self.patience = settings.patience * 60  # convert to seconds
         self.userdir = settings.userdir
 
         # open ZMQ hub using imagezmq
@@ -73,10 +72,20 @@ class ImageHub:
         self.max_images_write = settings.max_images_write
         self.image_count = 0  # count of images written in current directory
         self.first_time_over_max = True  # is this the first time max exceeded?
+        # start image writing thread
         self.image_writing_thread = threading.Thread(daemon=True,
                                     target=self.image_writer)
         self.keep_writing = True
         self.image_writing_thread.start()
+        # start thread that logs too much time between received messages
+        self.patience = settings.patience  # this is in minutes, not seconds
+        self.patience_seconds = self.patience * 60  # since sleep is in seconds
+        self.patience_check_interval = self.patience_seconds / 10.0
+        self.last_recvd_time = datetime.now()
+        self.patience_lock = threading.Lock()
+        self.last_recvd_checking_thread = threading.Thread(daemon=True,
+                                          target=self.recvd_time_checking)
+        self.last_recvd_checking_thread.start()
 
     def build_dir(self, directory):
         """Build full directory name from settings directory from yaml file
@@ -104,6 +113,8 @@ class ImageHub:
         See docs/imagehub-details.rst for more about message formats
 
         '''
+        with self.patience_lock:
+            self.last_recvd_time = datetime.now()  # update last_recvd_time
         message = text.split("|")
         if len(message) < 2:  # a "send_test_image" that should not be saved
             return b'OK'
@@ -155,12 +166,25 @@ class ImageHub:
         with open(full_file_name,"wb") as f:
             f.write(image)
 
+    def recvd_time_checking(self):
+        # checks on how much time has passed since the last received message
+        # run as a separate thread, started in the class constructor
+        # if more time than settings.patience, call handle_timeout
+        while True:
+            sleep(self.patience_check_interval)  # how often to check
+            with self.patience_lock:  # because its being updated in main thread
+                last_recvd_time = self.last_recvd_time
+            now = datetime.now()
+            if (now - last_recvd_time).total_seconds() >= self.patience_seconds:
+                self.handle_timeout()
+                with self.patience_lock:
+                    self.last_recvd_time = datetime.now()  # restart timer
+
     def handle_timeout(self):
         timestamp = datetime.now().isoformat().replace(':', '.')
         message = 'No messages received for ' + str(
-            self.patience // 60) + ' minutes.'
+            self.patience) + ' minutes.'
         self.log.info(message)
-        pass
 
     def closeall(self):
         """ Close all resources & write any images remaining in image_q.

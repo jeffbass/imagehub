@@ -2,7 +2,7 @@
 ---
 hub:
   queuemax: 500 # maximum size of queue of images to write
-  patience: 1  # how often to log a lack of message in minutes
+  patience: 60  # how often to log a lack of message in minutes
   print_settings: False
   data_directory: imagehub_data
-  max_images_write: 500  # a cap on images to write in one day
+  max_images_write: 5000  # a cap on images to write in one day
