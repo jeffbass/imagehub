@@ -175,7 +175,7 @@ class ImageHub:
             with self.patience_lock:  # because its being updated in main thread
                 last_recvd_time = self.last_recvd_time
             now = datetime.now()
-            if (now - last_recvd_time).total_seconds >= self.patience_seconds:
+            if (now - last_recvd_time).total_seconds() >= self.patience_seconds:
                 self.handle_timeout()
                 with self.patience_lock:
                     self.last_recvd_time = datetime.now()  # restart timer
