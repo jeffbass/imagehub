@@ -51,9 +51,6 @@ def main():
 
 def start_logging(hub):
     log = logging.getLogger()
-    # Choose between RotatingFileHandler or TimedFileHandler
-    #  handler = logging.handlers.RotatingFileHandler(hub.logfile,
-    #   maxBytes=99000, backupCount=995)
     handler = logging.handlers.TimedRotatingFileHandler(hub.logfile,
         when='midnight', backupCount=995)
     formatter = logging.Formatter('%(asctime)s ~ %(message)s')
