@@ -23,14 +23,15 @@ installing and testing **imagenode** are in the
 `imagenode GitHub repository <https://github.com/jeffbass/imagenode.git>`_.
 
 Running the tests below will place 3 new directories on the computer running
-**imagenode**: (1) a ``logs`` directory, (2) an ``images`` directory and (3)
-an ``imagehub_data`` directory. This last directory can be changed by changing
-the ``data_directory`` option in the the ``imagehub.yaml`` file.
+**imagenode**: (1) a ``logs`` directory and (2) an ``images`` directory, both of
+which are subdirectories of (3) an ``imagehub_data`` directory. This directory
+name can be changed using the ``data_directory`` option in the the
+``imagehub.yaml`` file.
 
 Directory Structure for the Tests
 =================================
-Both **imagehub** and **imagezmq** should be git-cloned to the computer
-that they will be running on. I have done all testing at the user home
+To run the tests, **imagehub** should be git-cloned to the computer
+that it will be running on. I have done all testing using the user's home
 directory::
 
   ~  # user home directory
@@ -40,15 +41,6 @@ directory::
   |    +--- docs
   |    +--- imagehub
   |         +--- imagehub.py
-  |
-  +--- imagezmq   # the git-cloned directory for imagezmq
-       +--- docs
-       +--- imagezmq
-       |    +--- imagezmq.py  # contains the imagezmq classes
-       +--- tests
-            +--- timing_receive_jpg_buf.py
-            +--- ...etc, etc.
-
 
 Test 1: Running **imagehub** with a single **imagenode** sender
 ===============================================================
@@ -105,14 +97,14 @@ as a display computer when you tested **imagenode**).
    stop both programs by pressing Ctrl-C in both terminal windows.
 
 If you look in the ``imagehub_data`` directory you will see some files that
-contain the event messages from your imagenode PiCamera. They will appear like
-this::
+contain the images and the event messages from your imagenode PiCamera. They
+will look something like this::
 
   ~/imagehub_data
   ├── images
   │   └─── 2018-12-30  # this will be named for the date of your testing
-  │       ├── YourNodeName-2018-12-30T23.13.31.620992.jpg
-  │       ├── YourNodeName-2018-12-30T23.13.31.813029.jpg
+  │       ├── YourNodeName-2020-12-30T23.13.31.620992.jpg
+  │       ├── YourNodeName-2020-12-30T23.13.31.813029.jpg
   │       └──  # etc, etc. for additional images
   │
   └── logs
@@ -122,8 +114,8 @@ Images created by your motion or light changes will be named according to your
 node "name" option in the ~/imagenode.yaml file on the Raspbery Pi. You can use
 any image viewer to look at these jpg images.
 
-If you view the imagehub.log file, you will see an event listing that looks like
-the log example in the beginning of the README.rst file.
+If you view the ``imagehub.log`` file, you will see an event listing that looks
+like the log example in the beginning of the ``README.rst`` file.
 
 Remember, when running the tests, start the **imagehub** program running first,
 and then start the **imagenode** program. You can end the programs by pressing
@@ -149,11 +141,12 @@ saved in Test 1, so you will see all the images from Test 1 AND all the images
 from Test 2 in the images directory. And the event messages in the log will be
 added to the ones put into the log during Test 1.
 
-It is important that the node "name" option specify a DIFFERENT node name for each
-of Raspberry Pi (in the ~/imagenode.yaml file on each RPi). The node name
-becomes part of the file name of each image and it labels each event in the log.
+It is important that the node "name" option specifies a DIFFERENT node name for
+each Raspberry Pi imagenode (in the ~/imagenode.yaml file on each RPi). The node
+name becomes part of the file name of each image and it labels each event in the
+log. Each **imagenode** name must be unique for this naming convention to work.
 
-There are a few settings in the imagehub.yaml file that specify the data
+There are a few settings in the ``imagehub.yaml`` file that specify the data
 directory, a maximum number of images to write, etc. You can learn more about
 these options in `ImageHub Settings and the imagehub.yaml file <settings-yaml.rst>`_.
 
