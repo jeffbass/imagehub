@@ -23,8 +23,14 @@ Here is the imagehub.yaml file where all the options have been specified::
 YAML file names and locations
 =============================
 
-The **imagenode** program expects its settings to be in a file named
-``imagenode.yaml`` in the home directory.
+The ``imagehub.yaml`` settings file is expected to be in the users home
+directory by default. You can specify the path to a different directory
+containing ``imagehub.yaml`` by using the optional argument ``--path``:
+
+.. code-block:: bash
+
+    workon py3cv3  # use your own virtual environment name
+    python3 imagenode.py --path directory_name  # directory holding imagehub.yaml
 
 There is an example ``imagehub.yaml`` file in the main repository folder. It is
 the same as the file shown above. To use the file, copy it to the home

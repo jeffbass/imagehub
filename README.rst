@@ -45,8 +45,7 @@ are handled by other programs. See `Using imagenode in distributed computer visi
 for a more detailed explanation of the overall project design. See the
 `Yin Yang Ranch project <https://github.com/jeffbass/yin-yang-ranch>`_
 for more details about the architecture of the
-**imagenode** <--> **imagezmq** <--> **imagehub** system.
-
+**imagenode** <--> **imageZMQ** <--> **imagehub** system.
 
 
 imagehub Features
@@ -65,13 +64,13 @@ Dependencies and Installation
 - Python 3.5, 3.6 and 3.7
 - OpenCV 3.3 and 4.0+
 - PyZMQ 16.0+
-- imagezmq 1.0.1+
+- imageZMQ 1.0.1+
 
-**imagehub** uses **imagezmq** to receive event messages and images that are
+**imagehub** uses **imageZMQ** to receive event messages and images that are
 captured and sent by **imagenode**. You will need to install and test both
-**imagezmq** and **imagenode** before using **imagehub**.
-The instructions for installing and testing **imagezmq** are in the
-`imagezmq GitHub repository <https://github.com/jeffbass/imagezmq.git>`_.
+**imageZMQ** and **imagenode** before using **imagehub**.
+The instructions for installing and testing **imageZMQ** are in the
+`imageZMQ GitHub repository <https://github.com/jeffbass/imagezmq.git>`_.
 The instructions for installing and testing **imagenode** are in the
 `imagenode GitHub repository <https://github.com/jeffbass/imagenode.git>`_.
 
@@ -82,8 +81,8 @@ cloning the GitHub repository::
 
 Once you have cloned **imagehub** to a directory on your local machine,
 you can run the tests using the instructions below. The instructions assume you
-have cloned both **imagehub** and **imagezmq** to the user home directory. It
-is also important that you have successfully run all the tests for **imagezmq**
+have cloned both **imagehub** to the user home directory. It
+is also important that you have successfully run all the tests for **imageZMQ**
 and for **imagenode**. The recommended testing arrangement is to run **imagehub**
 on the same Mac (or other display computer) that you used to run the
 ``imagezmq/tests/timing_receive_jpg_buf.py`` program when you tested **imagenode**.
@@ -95,44 +94,61 @@ Running the Tests
 will be using **imagenode** to send test images and event messages to
 **imagehub**.
 
-Test **imagehub** in the same virtualenv that you tested **imagenzmq** in. For
-the **imagezmq** testing and for the **imagenode** testing, my virtualenv is
-called py3cv3.
+Both **imagehub** and **imagenode** use **imageZMQ** for sending and receiving
+images and event messages. The **imageZMQ** package is pip installable. It is
+likely that you already have it installed from your tests of **imagenode**. If
+not, it should be pip installed in a virtual environment. For example,
+my virtual environment is named **py3cv3**.
 
-To test **imagehub**, you will use the same setup as Test 2 for **imagenode**
-(see  `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_).
+To install **imageZMQ** using pip:
+
+.. code-block:: bash
+
+    workon py3cv3  # use your own virtual environment name
+    pip install imagezmq
+
+
+Test **imagehub** in the same virtualenv that you installed **imagenZMQ** in.
+For **imageZMQ** and **imagenode** testing, my virtualenv is called ``py3cv3``.
+
+To test **imagehub**, you will use the same setup as Test 2 for **imagenode**.
 You will run **imagenode** on a Raspberry Pi with a PiCamera, just as you did for
 **imagenode** Test 2. You will run **imagehub** on the same Mac (or other display
 computer) that you used to display the **imagenode** test images.
 
 Directory Structure for running the imagehub tests
 --------------------------------------------------
-Neither **imagehub** or **imagezmq** are far enough along in their development
-to be pip installable. So they should both be git-cloned to the computer that
-they will be running on. I have done all testing at the user home
-directory. Here is a simplified directory layout::
+Neither **imagehub** or **imagenode** are far enough along in their development
+to be pip installable. So they should both be git-cloned to the computers that
+they will each be running on. I recommend doing all testing in the user home
+directory. Here is a simplified directory layout for the computer that will be
+running **imagehub**::
 
   ~ # user home directory of the computer running imagehub
-  +--- imagehub.yaml  # copied from imagenode/imagenode.yaml
+  +--- imagehub.yaml  # copied from imagenode/imagenode.yaml in this repository
   |
   +--- imagehub    # the git-cloned directory for imagehub
   |    +--- sub directories include docs, imagehub, tests
-  |
-  +--- imagezmq    # the git-cloned directory for imagezmq
-  |   +--- sub directories include docs, imagezmq, tests
   |
   +--- imagehub_data   # this directory will be created by imagehub
       +--- images      # images will be saved here
       +--- logs        # logs containing event messages will be saved here
 
-This directory arrangement, including docs, imagenode code, tests, etc. is a
-common development directory arrangement on GitHub. Using git clone from your
-user home directory (either on a Mac, a RPi or other Linux computer) will
-put both the **imagenode** and **imagezmq** directories in the right place
-for testing. The **imagehub** program creates a directory (imagehub_data) and
-2 subdirectories (images and logs) to store the images and logs of event
-messages it receives from **imagenode** running on one or more RPi's or other
-computers.
+The **imagehub** directory arrangement, including docs, **imagehub** code,
+tests, etc. is a common software development directory arrangement on GitHub.
+Using ``git clone`` from your user home directory on your **imagehub** computer
+(either on a Mac, a RPi or other Linux computer) will put the **imagehub**
+directories in the right place for testing. When the **imagehub** program runs,
+it creates a directory (``imagehub_data``) with 2 subdirectories (``images`` and
+``logs``) to store the images and event messages it receives from **imagenode**
+running on one or more RPi's or other computers. Running **imagenode** requires
+a settings file named ``imagehub.yaml``. To run the tests, copy the example
+``imagehub.yaml`` file from the ``imagehub`` directory to your home directory.
+The ``imagehub.yaml`` settings file is expected to be in your home directory,
+but you can specify another directory path using the --path optional argument.
+I recommend putting the ``imagehub.yaml`` file in your home directory for
+testing. You can move the ``imagehub.yaml`` file to a different directory after
+you have completed the tests.
 
 Test 1: Running **imagehub** with a single **imagenode** sender
 ---------------------------------------------------------------
@@ -153,45 +169,58 @@ Further details of running the tests are `here <docs/testing.rst>`_.
 Running **imagehub** in production
 ==================================
 Running the test programs requires that you leave a terminal window open, which
-is helpful for testing, but not for production runs. I have provided an example
-imagehub.sh shell script that shows how I start **imagehub** for the production
-programs observing my small farm. The key is to start the imagehub.py program
-1) in the correct virtualenv and 2) as a background task that allows the program
-to keep running when the terminal window is closed. There are multiple ways to
-start the imagehub.sh program when the RPi starts: use cron, use screen, or use
-the systemctl / systemd service protocol that linux services use for startup.
-The best one to use is the one that you prefer and are familiar with, so I won't
-make a specific recommendation here.
+is helpful for testing, but not for production runs. I use systemctl / systemd
+to start **imagehub** in production. I have provided an example
+``imagehub.service`` unit configuration file that shows how I start **imagehub**
+for the production programs observing my small farm. I have found the systemctl
+/ systemd system to be best way to start / stop / restart and check status of
+**imagehub** over several years of testing. For those who prefer using a shell
+script to start **imagehub**, I have included an example ``imagehub.sh``. It is
+important to run **imagehub** in the right virtualenv in production, regardless
+of your choice of program startup tools.
 
 In production, you would want to set the test options used to print settings
-to false; they are only helpful during testing. All errors and information
-are sent to imagehub.log in the same directory as imagehub.py. You will
-probably want the log to be in a different directory for production; the log
-file location can be set by changing it in the logging function at the bottom
-of the imagehub.py program file.
+to ``False``; they are only helpful during testing. All errors and **imagenode**
+event messages are saved in the file ``imagehub.log`` which is located in the
+directory you specify in the ``imagenode.yaml`` setting ``data_directory``:
+
+.. code-block:: yaml
+
+    data_directory: imagehub_data
+
+The ``imagehub.yaml`` settings file is expected to be in the users home
+directory by default. You can specify the path to a different directory
+containing ``imagehub.yaml`` by using the optional argument ``--path``:
+
+.. code-block:: bash
+
+    workon py3cv3  # use your own virtual environment name
+    python3 imagenode.py --path directory_name  # directory holding imagehub.yaml
 
 Additional Documentation
 ========================
 - `How imagehub works <docs/imagehub-details.rst>`_.
 - `The imagehub Settings and the imagehub.yaml file <docs/settings-yaml.rst>`_.
-- `Release and Version History <docs/release-history.rst>`_.
+- `Version History and Changelog <HISTORY.md>`_.
 - `Research and Development Roadmap <docs/research-roadmap.rst>`_.
-- `The imagezmq classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
-- `The imagenode program that captures and sends images <https://github.com/jeffbass/imagezmq>`_.
+- `The imageZMQ classes that allow transfer of images <https://github.com/jeffbass/imagezmq>`_.
+- `The imagenode program that captures and sends images <https://github.com/jeffbass/imagenode>`_.
 - `The larger farm automation / computer vision project <https://github.com/jeffbass/yin-yang-ranch>`_.
-  This project also shows the overall system architecture.
+  This project shows the overall system architecture. It also contains
+  links to my **PyCon 2020** talk video and slides explaining the project.
 
 Contributing
 ============
 **imagehub** is in early development and testing. I welcome open issues and
 pull requests, but because the code is still rapidly evolving, it is best
 to open an issue with some discussion before submitting any pull requests or
-code changes.
+code changes.  We can exchange ideas about your potential pull request and how
+to best incorporate and test your code.
 
 Acknowledgments
 ===============
 - **ZeroMQ** is a great messaging library with great documentation
   at `ZeroMQ.org <http://zeromq.org/>`_.
-- **PyZMQ** serialization examples provided a starting point for **imagezmq**.
+- **PyZMQ** serialization examples provided a starting point for **imageZMQ**.
   See the
   `PyZMQ documentation <https://pyzmq.readthedocs.io/en/latest/index.html>`_.

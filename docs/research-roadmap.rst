@@ -18,7 +18,7 @@ order; all of these are ongoing experiments on differing timelines.
 Receive and send along commands or requests to imagenode from Librarian
 -----------------------------------------------------------------------
 Right now, the **imagehub** returns "OK" after every message tuple is sent. The
-reply can be a "command word" instead that would cause **imagenode** to take
+reply could be a "command word" instead that would cause **imagenode** to take
 an action such as change the exposure_mode of the PiCamera. Or send a dozen
 "live frames" from the camera (even though no detector has activated). Command
 words look like this (format is: CommandWord value):
@@ -30,13 +30,12 @@ words look like this (format is: CommandWord value):
 Command words would arrive from the Librarian and be sent to the specific
 **imagenode** that is mentioned in the command.
 
-Add additional logic to handle commands and requests from Librarian
--------------------------------------------------------------------
-Currently, all event message, images and heartbeat messages originate from
-**imagenodes**. Event messages are logged, images are saved and heartbeat
-messages get a reply but cause no action on the part of the **imagehub**.
-Additional logic needs to be added to receive command and request messages
-from the Librarian. They will have the same message tuple format, but will
-need to be handled using added logic in process() method.
+As an alternative to passing commands from the Librarian to the **imagenode**
+in REP "command words", I am also testing an arrangement where the Librarian
+issues commands directly to the **imagenode** by making changes to the
+``imagenode.yaml`` file on the **imagenode** directly. In current testing,
+having the Librarian communicate directly with the **imagenode** rather than
+use the **imagehub** for commands is simpler and faster. But testing of
+alternatives is continuing.
 
 `Return to main documentation page README.rst <../README.rst>`_
