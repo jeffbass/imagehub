@@ -131,8 +131,8 @@ running **imagehub**::
   |    +--- sub directories include docs, imagehub, tests
   |
   +--- imagehub_data   # this directory will be created by imagehub
-      +--- images      # images will be saved here
-      +--- logs        # logs containing event messages will be saved here
+       +--- images      # images will be saved here
+       +--- logs        # logs containing event messages will be saved here
 
 The **imagehub** directory arrangement, including docs, **imagehub** code,
 tests, etc. is a common software development directory arrangement on GitHub.

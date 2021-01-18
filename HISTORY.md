@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the file naming convention for the saved event messages by using the
   TimedRotatingFileHandler in event logging.
 - Reorganized previous docs/release-history.rst into this more standardized
-  HISTORY.md file.
+  HISTORY.md file. Deleted docs/release-history.rst file.
 - Updated Research and Development Roadmap.
 
 ### Changes and Bugfixes

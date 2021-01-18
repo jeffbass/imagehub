@@ -65,8 +65,8 @@ image) in the image portion of the tuple.
 In both message types, the "|" character is used as a field delimiter. If there
 is only one camera, then the view name could be absent.
 
-Event messages look like this (there is also a small black image as 2nd part of
-each message tuple, not shown here)::
+**Event messages** look like this (there is also a small black image as 2nd part
+of each message tuple, not shown here)::
   WaterMeter|startup|
   WaterMeter|OK|                 # If Heartbeat message option chosen
   WaterMeter|motion|moving
@@ -81,11 +81,14 @@ The template for **event** messages is::
   node name and view name|information|detected state
 
 For each **event** message received, the date / time is added and the message
-is added to the event log using Python's logging module. The log files grow
-to a set size (set by option ``log_max_size``) and then rotate, creating imagehub.log,
-imagehug.log.1, imagehub.log2, etc.
+is added to the event log using Python's logging module. The log files are
+rotated each day at midnight, creating ``imagehub.log, imagehug.log.2020.12.25,
+imagehub.log.2020.12.24``, etc. In this pattern, today's event messages are
+always in the file ``imagehub.log``. And all previous event messages are in a
+log file that ends in the date they were logged. The log naming pattern is
+provided by the ``TimedRotatingFileHandler`` of Python's ``logging`` module.
 
-Image messages look like this (the image itself is the 2nd part of each
+**Image messages** look like this (the image itself is the 2nd part of each
 message tuple, not shown here)::
   WaterMeter|jpg|moving
   WaterMeter|image|moving
@@ -116,9 +119,9 @@ looks like this::
   │   └──  # additional directories for each date
   │
   └── logs
-      ├── imagehub.log     # contains the most recent event messages
-      ├── imagehub.log.1   # ...contains earlier event messages
-      ├── imagehub.log.2   # ...contains even earlier event messages
+      ├── imagehub.log     # contains the most recent (today) event messages
+      ├── imagehub.log.2020.12.25   # ...contains previous day event messages
+      ├── imagehub.log.2020.12.24   # ...contains previous day event messages
       └──  # etc, etc.
 
 
