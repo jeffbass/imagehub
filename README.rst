@@ -217,6 +217,16 @@ to open an issue with some discussion before submitting any pull requests or
 code changes.  We can exchange ideas about your potential pull request and how
 to best incorporate and test your code.
 
+An Excellent Alternative Design for an imagehub & librarian combination
+=======================================================================
+An imagenode & imagehub user @sbkirby has designed and built a completely
+different approach to building a librarian using a broad mix of tools in
+addition to Python including Node-Red, MQTT, MariaDB and OpenCV in Docker
+containers. He has posted it in this
+`Github repository <https://github.com/sbkirby/imagehub-librarian>`_.
+I like his approach a lot, although I'm still working on a mostly Python
+approach to my own librarian.
+
 Acknowledgments
 ===============
 - **ZeroMQ** is a great messaging library with great documentation
