@@ -220,7 +220,7 @@ to best incorporate and test your code.
 An Excellent Alternative Design for an imagehub & librarian combination
 =======================================================================
 An ``imagenode`` & ``imagehub`` user and code contributor @sbkirby has designed
-and built a completely different approach to building an imagehub and librarian
+a completely different approach to building an imagehub and librarian
 combination using a broad mix of tools in addition to Python including Node-Red,
 MQTT, MariaDB and OpenCV in Docker containers. He has posted it in this
 `Github repository <https://github.com/sbkirby/imagehub-librarian>`_.
