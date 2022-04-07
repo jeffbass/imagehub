@@ -20,8 +20,9 @@ events from 2 other Raspberry Pi computers that were sending at the same time,
 2 shown above. Temperature events are gathered by sensors attached to the
 Raspberry Pi computers' GPIO pins. This log and these images were saved by
 the imagehub program running on a Ubuntu computer that was receiving events and
-images from a dozen imagenodes running on Raspberry Pi computers. The log shows
-event messages from 3 of those imagenodes (WaterMeter, BackDeck and Barn).
+images from a dozen imagenodes running on Raspberry Pi computers. The log
+snippet shows the event messages from 3 of those imagenodes (WaterMeter,
+BackDeck and Barn) during an hour around midnight.
 
 .. contents::
 
