@@ -64,7 +64,17 @@ Dependencies and Installation
 - Python 3.5, 3.6 and 3.7
 - OpenCV 3.3 and 4.0+
 - PyZMQ 16.0+
-- imageZMQ 1.0.1+
+- imageZMQ 1.1.1
+- Recent and current versions of MacOS, Raspberry Pi OS and Ubuntu
+
+  - NOT yet tested with Raspberry Pi OS Bullseye. Waiting for a production
+    replacement for the Python PiCamera module to update imageZMQ and imagehub.
+    I expect to test imagehub with Raspberry Pi OS Bullseye after imageZMQ and
+    imagehub have been tested with Bullseye.
+  - Not tested with Windows. I don't have a computer running Windows.
+    I have heard from some users that it is being used with Windows
+    successfully.
+
 
 **imagehub** uses **imageZMQ** to receive event messages and images that are
 captured and sent by **imagenode**. You will need to install and test both
