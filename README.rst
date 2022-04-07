@@ -14,11 +14,14 @@ captured by a Raspberry Pi PiCamera and an infrared floodlight:
 
 .. image:: docs/images/coyote-events.png
 
-The log shows the coyote motion events (in **bold**) as "Barn". It also shows
+The log shows the coyote motion events (in **bold**) from "Barn". It also shows
 events from 2 other Raspberry Pi computers that were sending at the same time,
 "WaterMeter" and "BackDeck". Motion events create camera images like the
 2 shown above. Temperature events are gathered by sensors attached to the
-Raspberry Pi computers' GPIO pins.
+Raspberry Pi computers' GPIO pins. This log and these images were saved by
+the imagehub program running on a Ubuntu computer that was receiving events and
+images from a dozen imagenodes running on Raspberry Pi computers. The log shows
+event messages from 3 of those imagenodes (WaterMeter, BackDeck and Barn).
 
 .. contents::
 
