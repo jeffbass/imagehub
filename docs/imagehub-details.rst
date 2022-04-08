@@ -67,18 +67,31 @@ is only one camera, then the view name could be absent.
 
 **Event messages** look like this (there is also a small black image as 2nd part
 of each message tuple, not shown here)::
-  WaterMeter|startup|
-  WaterMeter|OK|                 # If Heartbeat message option chosen
+  JeffOffice|Restart|rpi99|RPi|192.168.86.38|859|149.48
+  JeffOffice|Temp|77 F
   WaterMeter|motion|moving
   WaterMeter|motion|still
   Garage|light|lighted
   Garage|light|dark
-  JeffOffice window|light|lighted
-  JeffOffice door|motion|still
+  Garage|Temp|76 F
+  BackDeck|Temp|98 F
+  Barn|motion|moving
+  Barn|motion|still
+  Driveway Mailbox|motion|moving
+  Driveway Mailbox|motion|still
+  Driveway|Restart|rpi20|RPi|192.168.86.52|875|738.71
+  Driveway Mailbox|motion|still
+  Driveway|Temp|98 F
 
 The template for **event** messages is::
+  node name and view name|event type|detected state or other information
 
-  node name and view name|information|detected state
+The ``view name`` is optional and is used when there are be 2 different
+cameras attached to an imagenode. The ``node name`` is always present, even when
+a ``view name`` is not. For example, the Driveway imagenode shown above has a
+camera with a view toward the Mailbox. The ``Mailbox`` view name appears when a
+motion event occurs but is not present when non-camera events occur, such as the
+restart of an imagenode or an imagenode sensor temperature reading.
 
 For each **event** message received, the date / time is added and the message
 is added to the event log using Python's logging module. The log files are
