@@ -84,6 +84,7 @@ of each message tuple, not shown here)::
   Driveway|Temp|98 F
 
 The template for **event** messages is::
+
   node name and view name|event type|detected state or other information
 
 The ``view name`` is optional and is used when there are be 2 different
@@ -111,6 +112,10 @@ message tuple, not shown here)::
 The template for **image** messages is::
 
     node name and view name|send_type|detector state
+
+The ``view name`` is optional and is used when there are be 2 different
+cameras attached to an imagenode. The ``node name`` is always present, even when
+a ``view name`` is not.
 
 When **imagehub** receives an image message as formatted above, it adds the date and
 time to the nodename and saves the image in the images directory. The images
