@@ -87,7 +87,7 @@ The template for **event** messages is::
 
   node name and view name|event type|detected state or other information
 
-The ``view name`` is optional and is used when there are be 2 different
+The ``view name`` is optional and is used when there are 2 different
 cameras attached to an imagenode. The ``node name`` is always present, even when
 a ``view name`` is not. For example, the Driveway imagenode shown above has a
 camera with a view toward the Mailbox. The ``Mailbox`` view name appears when a
@@ -113,9 +113,11 @@ The template for **image** messages is::
 
     node name and view name|send_type|detector state
 
-The ``view name`` is optional and is used when there are be 2 different
+The ``view name`` is optional and is used when there are 2 different
 cameras attached to an imagenode. The ``node name`` is always present, even when
-a ``view name`` is not.
+a ``view name`` is not. The ``send_type`` is the type of image file that has
+been sent. Current choices are ``jpg`` for JPEG compressed images or ``image``
+for OpenCV images in their native (uncompressed) state as a Numpy array.
 
 When **imagehub** receives an image message as formatted above, it adds the date and
 time to the nodename and saves the image in the images directory. The images
